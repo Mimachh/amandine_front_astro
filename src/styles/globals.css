@@ -59,3 +59,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.hover-underline-link {
+  @apply before:content-[""] before:absolute before:bottom-0 before:left-0 before:h-0.5 before:rounded-full before:transition-all before:duration-500   
+}

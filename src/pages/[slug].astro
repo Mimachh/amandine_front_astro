@@ -1,0 +1,23 @@
+---
+import AppLayout from '@/components/layouts/AppLayout.astro';
+import { getAllPagesWithSlugs, getPageBySlug } from '@/lib/api/api';
+
+export async function getStaticPaths() {
+  const pagesWithSlugs = await getAllPagesWithSlugs();
+  return pagesWithSlugs.edges.map(({ node }) => {
+    return {
+      params: { slug: node.slug },
+    };
+  });
+}
+const { slug } = Astro.params;
+const page = await getPageBySlug(slug);
+---
+
+
+<AppLayout>
+    <div class="mb-5 text-4xl font-bold">{page.title}</div>
+    <article class="prose lg:prose-xl">
+     {page.content}
+    </article>
+</AppLayout>

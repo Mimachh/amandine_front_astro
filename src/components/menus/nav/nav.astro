@@ -1,0 +1,37 @@
+---
+import NavToggle from "@/components/toggles/NavToggle";
+import NavLinks from "./navLinks.astro";
+import { ModeToggle } from "@/components/toggles/ModeToggle";
+
+---
+<div class="shadow-lg">
+    <nav class="flex flex-wrap items-center justify-between px-4 py-3 max-w-6xl mx-auto">
+        <a href="/" class="cursor-pointer p-4 ml-2 text-white">AstroPress</a>
+        <div class="flex items-center">
+          <ul class="hidden md:flex items-center justify-end flex-grow mr-1.5">
+          <NavLinks 
+          aClasses="mx-3"
+          />
+          </ul>
+          <div class="mr-3 w-[1.2rem]">
+            <ModeToggle 
+            client:only="react"
+            />
+          </div>
+          <div class="block md:hidden">
+            <NavToggle  
+            client:only="react"
+            >
+            <div slot="link">
+                <NavLinks slot="link" 
+                aClasses="text-2xl font-semibold"
+                liClasses="my-4"
+                />
+            </div>
+        </NavToggle>
+          </div>
+          
+        </div>
+      </nav>
+</div>
+
