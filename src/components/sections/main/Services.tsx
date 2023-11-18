@@ -5,6 +5,7 @@ import { CalendarDays, Search } from 'lucide-react'
 import axios from 'axios'
 import Booking from "@/components/booking/Booking"
 import Loader from '@/components/Loader'
+import { headers } from '@/helper/AmeliaCall'
 
 export interface ServiceProps {
   aggregatedPrice: boolean;
@@ -55,21 +56,8 @@ export default function Services() {
   const [serviceId, setServiceId] = useState('');
   const [color, setColor] = useState("");
   
-  const fetchData = async () => {
-    try {
-      const response = await axios.get('https://www.amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/services', {
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'Amelia': '4LT+lvQqlUgLHex341s4iE3ZfwUbiJnizaRBSqTK3peJ',
-          'Accept': "*/*",
-        },
-      });
-      setServices(response.data.data.services)
-      setLoading(false)
-    } catch (error) {
-      console.error('Erreur lors de la récupération des services:', error);
-    }
-  };
+
+
 
   const handleModal = (id: string, color: string) => {
     setIsOpen(true);
@@ -79,6 +67,21 @@ export default function Services() {
 
   // Appelez la fonction fetchData au chargement de la page
   useEffect(() => {
+ 
+    const fetchData = async () => {
+      setLoading(true);
+      const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
+   try {
+     const response = await axios.get(`${ameliaURL}services`, {
+       headers: headers,
+     });
+     setServices(response.data.data.services)
+     setLoading(false)
+   } catch (error) {
+     console.error('Erreur lors de la récupération des services:', error);
+   }
+ };
+
     fetchData();
   }, []);
 

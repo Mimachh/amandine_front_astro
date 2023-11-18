@@ -28,12 +28,12 @@ export default function Booking(props: BookingModalProps) {
       setLoading(true);
       const urlSuffixService = `services/${serviceId}`;
       const urlSuffixSlots = `slots&serviceId=${serviceId}&serviceDuration=3600&providerIds=1&persons=1&excludeAppointmentId=null`;
-
+      const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
 
       const signal = controller.signal;
 
       try {
-        const responseService = await axios.get(`https://www.amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/${urlSuffixService}`, {
+        const responseService = await axios.get(`${ameliaURL}${urlSuffixService}`, {
           headers: headers,
           signal: signal,
         });
@@ -120,7 +120,7 @@ export default function Booking(props: BookingModalProps) {
                     </div>
                     <div className="mt-3 text-center sm:mt-5">
                       <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                        Payment successful {borderColor}
+                        Payment successful
                       </Dialog.Title>
                       <div className="mt-2">
                         <p className="text-sm text-gray-500">
