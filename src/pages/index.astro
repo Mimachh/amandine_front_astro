@@ -2,13 +2,25 @@
 import AppLayout from "@/components/layouts/AppLayout.astro"
 import Hero from "@/components/sections/main/hero.astro"
 import About from "@/components/sections/about.astro"
+import { getMainPage } from "@/lib/api/mainPage";
+import type { PageData } from "@/lib/api/mainPage";
+import Services from "@/components/sections/main/Services";
+import Incentives from "@/components/sections/main/incentives.astro"
 // let res = await fetch(`https://amandine-server.kmllr.fr/wp-json/wp/v2/pages?slug=accueil`)
 
+
+const dataPage = (await getMainPage()) as PageData;
+const hero = dataPage.page.mainPage;
+const about = dataPage.page.aboutSection
+const garantie = dataPage.page.garantiePrestation
 ---
 
 
 <AppLayout>
-	<Hero />
-	<About />
+	<Hero 
+	hero={hero}
+	/>
+	<Incentives garantie={garantie}/>
+	<Services client:only/>
+	<About about={about}/>
 </AppLayout>
-

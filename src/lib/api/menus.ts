@@ -45,8 +45,7 @@ export interface PrimaryMenuNode {
         }
       }
       `);
-      console.log('Primary Menu Data:', data); // Ajoutez cette ligne
-  
+      // console.log('Primary Menu Data:', data); // Ajoutez cette ligne
       return data?.menus?.nodes[0];
     } catch (error) {
       console.error('Error fetching primary menu:', error);
