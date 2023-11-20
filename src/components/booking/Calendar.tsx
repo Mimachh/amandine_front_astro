@@ -1,11 +1,9 @@
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
-import { Menu, Transition } from '@headlessui/react'
-import { EllipsisVerticalIcon } from '@heroicons/react/24/outline'
-import { add, eachDayOfInterval, endOfMonth, endOfWeek, format, getDay, isEqual, isSameDay, isSameMonth, isToday, isWithinInterval, parse, parseISO, startOfMonth, startOfToday, startOfWeek } from "date-fns"
+import { add, eachDayOfInterval, endOfMonth, endOfWeek, format, getDay, isEqual, isSameMonth, isToday, parse, startOfToday, startOfWeek } from "date-fns"
 import { fr } from 'date-fns/locale';
-import type { ServiceProps } from '../sections/main/Services'
-import type { SlotsProps, UserProps, dayOffListArray } from './Booking'
+import type { CalendarProps } from '../types/CalendarTypes'
+import { getFormattedCurrentMonthDates, getFormattedDayOffDates } from '@/helper/formattedDates'
 
 
 
@@ -13,22 +11,20 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
 }
 
-interface CalendarProps {
-    service: ServiceProps;
-    slots: SlotsProps[];
-    employee: UserProps;
-}
+
+
 export default function Calendar(props: CalendarProps) {
 
 
 
-    const { service, slots, employee } = props;
+    const { service, slots, employee, setCurrentStep, currentStep, setDaySelected } = props;
 
 
 
     const today = startOfToday();
     const [selectedDay, setSelectedDay] = useState(today)
     const [currentMonth, setCurrentMonth] = useState(format(today, 'MMMM-yyyy'))
+    
     let firstDayCurrentMonth = parse(currentMonth, 'MMMM-yyyy', new Date());
     const newDays = eachDayOfInterval({
         start: startOfWeek(firstDayCurrentMonth, { locale: fr }),
@@ -119,6 +115,8 @@ export default function Calendar(props: CalendarProps) {
                             type="button"
                             onClick={() => {
                                 setSelectedDay(day)
+                                setDaySelected(format(day, "yyyy-MM-dd"))
+                                setCurrentStep(currentStep + 1)
                             }}
                             disabled={day < today || !filteredCurrentMonthDates.includes(format(day, 'yyyy-MM-dd')) && !isToday(day)}
                             style={{
@@ -169,30 +167,7 @@ let colStartClasses = [
 
 
 
-export function getFormattedDayOffDates(dayOffList: dayOffListArray[]): string[] {
-    const dayOffDates: string[] = [];
 
-    dayOffList.forEach((dayOff) => {
-        const startDate = parseISO(dayOff.startDate);
-        const endDate = parseISO(dayOff.endDate);
-
-        const datesInInterval = eachDayOfInterval({ start: startDate, end: endDate });
-        const formattedDates = datesInInterval.map((date) => format(date, "yyyy-MM-dd", { locale: fr }));
-        dayOffDates.push(...formattedDates);
-    });
-
-    return dayOffDates;
-}
-
-
-
-
-export function getFormattedCurrentMonthDates(slots: Record<string, any>, newDays: Date[]): string[] {
-    return Object.keys(slots)
-        .map((dateString) => parseISO(dateString))
-        .filter((date) => newDays.some((day) => isSameDay(day, date)))
-        .map((formattedDate) => format(formattedDate, "yyyy-MM-dd", { locale: fr }));
-}
 
 
 

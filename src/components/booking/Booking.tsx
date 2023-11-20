@@ -5,10 +5,14 @@ import { headers } from '@/helper/AmeliaCall';
 import Loader from '../Loader';
 import { Button } from '../ui/button';
 import { X } from 'lucide-react';
-import type { ServiceProps } from '../sections/main/Services';
 import Calendar from './Calendar';
 import { Separator } from "@/components/ui/separator"
-import { format,startOfToday } from "date-fns"
+import { format, startOfToday } from "date-fns"
+import type { SlotsProps } from '../types/CalendarTypes';
+import type { UserProps } from '../types/UserTypes';
+import { durationFormatter } from '@/helper/formattedDates';
+import Creneaux from './Creneaux';
+import type { ServiceProps } from '../types/ServiceTypes';
 
 
 
@@ -19,47 +23,31 @@ interface BookingModalProps {
 }
 
 
-export type InnerArray = any[];
-export interface SlotsProps {
-  [date: string]: {
-    [hour: string]: InnerArray;
-  };
-}
-
-
-export interface dayOffListArray {
-  id: number;
-  name: string;
-  startDate: string;
-  endDate: string;
-  repeat: number;
-}
-export interface UserProps {
-  dayOffList?: dayOffListArray[];
-  description?: string;
-  email: string;
-  firstName: string;
-  id: string;
-  lastName: string;
-  pictureFullPath?: string;
-  pictureThumbPath?: string;
-  status: string;
-
-}
-
-
 export default function Booking(props: BookingModalProps) {
   const { open, setOpen, serviceId } = props;
   const [loading, setLoading] = useState(true)
+  
+  
   const cancelButtonRef = useRef(null)
 
 
   const [service, setService] = useState<ServiceProps>({});
+  
+  const [daySelected, setDaySelected] = useState<string>(null);
+
+
+
+
+  const [selectedDaySlots, setSelectedDaySlots] = useState<SlotsProps>({});
+
   const [slots, setSlots] = useState<SlotsProps[]>([]);
   const [employee, setEmployee] = useState<UserProps>();
 
 
-  const [occupiedSlots, setOccupiedSlots] = useState();
+
+
+  const [occupiedSlots, setOccupiedSlots] = useState<SlotsProps[]>([]);
+  const [slotSelectedOccupied, setSlotSelectedOccupied] = useState<SlotsProps>({});
   const [busyness, setBusyness] = useState();
 
   useEffect(() => {
@@ -71,12 +59,12 @@ export default function Booking(props: BookingModalProps) {
       const employeeID = import.meta.env.PUBLIC_EMPLOYEE_ID;
       const today = startOfToday();
       const formattedToday = format(today, "yyyy-MM-dd");
- 
+
       setLoading(true);
       const urlSuffixService = `services/${serviceId}`;
       const urlSuffixSlots = `slots&serviceId=${serviceId}&startDateTime=${formattedToday}&duration=3600&providerIds=1&persons=1&excludeAppointmentId=null&timeAfter&timeBefore`;
       const urlSuffixEmployee = `users/providers/${employeeID}`
-      
+
 
 
       const signal = controller.signal;
@@ -107,11 +95,11 @@ export default function Booking(props: BookingModalProps) {
         });
 
 
-
-        // console.log("occupied", responseSlots.data.data.occupied);
+        setOccupiedSlots(responseSlots.data.data.occupied);
+        console.log("occupied", responseSlots.data.data.occupied);
         // console.log("service", responseSettings);
         // console.log("employe", responseEmployee.data.data.user);
-
+        // console.log(responseSlots.data.data.slots)
         setEmployee(responseEmployee.data.data.user);
         setSlots(responseSlots.data.data.slots);
         // console.log("busyness", responseSlots.data.data.busyness);
@@ -127,8 +115,12 @@ export default function Booking(props: BookingModalProps) {
     };
 
     if (open) {
+      setCurrentStep(1);
+      setDaySelected(null)
       fetchData();
     }
+
+
 
     // Cleanup function to abort the fetch if the component is unmounted
     return () => {
@@ -136,9 +128,36 @@ export default function Booking(props: BookingModalProps) {
     };
   }, [open, serviceId]);
 
-  function durationFormatter(duration: number) {
-    return duration / 60;
-  }
+  useEffect(() => {
+    // Fonction pour obtenir les créneaux horaires associés à la date sélectionnée
+    const getSlotsForSelectedDay = () => {
+      // Vérifiez si daySelected est défini et existe dans le tableau de données
+      if (daySelected && slots.hasOwnProperty(daySelected)) {
+        // Récupérez les créneaux horaires associés à la date sélectionnée
+        const slotsSelected = slots[daySelected];
+  
+        // Récupérez également les créneaux occupés associés à la date sélectionnée
+        setSlotSelectedOccupied(occupiedSlots[daySelected]);
+        setSelectedDaySlots(slotsSelected);
+        return { slotsSelected, slotSelectedOccupied };
+      }
+      // Si la date sélectionnée n'existe pas dans le tableau de données, retournez un objet vide
+      setSelectedDaySlots(null);
+      return { slotsSelected: null, slotSelectedOccupied: null };
+    };
+  
+    // Utilisation de la fonction pour obtenir les créneaux horaires associés à la date sélectionnée
+    // const { slotsSelected, slotSelectedOccupied } = getSlotsForSelectedDay();
+    getSlotsForSelectedDay()
+    // Faites ce que vous devez avec slotsSelected et slotSelectedOccupied
+    // ...
+  
+  }, [daySelected, slots]);
+
+
+  // Tabulation
+  const [currentStep, setCurrentStep] = useState(1);
+
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
@@ -169,7 +188,6 @@ export default function Booking(props: BookingModalProps) {
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel
-
                 className="relative transform overflow-hidden outline-primary rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg md:max-w-xl sm:p-6">
                 {loading ? (
                   <Loader />
@@ -177,7 +195,10 @@ export default function Booking(props: BookingModalProps) {
                   <>
                     <div className='fixed top-0 right-0 p-1'>
                       <Button
-                        onClick={() => setOpen(false)}
+                        onClick={() => {
+                          setOpen(false)
+                          setDaySelected(null)
+                        }}
                         className='px-2 py-2'
                         variant='secondary'
                         size='xs'><X className='w-4 h-4' />
@@ -194,7 +215,7 @@ export default function Booking(props: BookingModalProps) {
                             <Dialog.Title as="h3" className="text-base md:text-lg font-semibold leading-6 text-gray-900">
                               Réservation : <span style={{ color: service.color }}>{service.name}</span>
                             </Dialog.Title>
-                            <p className="text-[12px] md:text-[14px] text-gray-500">
+                            <p className="text-[12px] md:text-[14px] text-gray-500 max-w-xs md:max-w-none">
                               {service.description}
                             </p>
                           </div>
@@ -208,13 +229,40 @@ export default function Booking(props: BookingModalProps) {
                           >{durationFormatter(service.duration)}min</span> - <span className="underline"> A partir de:</span> &nbsp;<span style={{ color: service.color }}>{service.price}€</span> - Paiement sur place</p>
                       </div>
                       <p className='font-semibold text-gray-800 text-[18px] pt-1 pb-1'>Choisissez le jour de votre rendez-vous</p>
-                
-                      <Separator className="mb-4"/>
-                      <Calendar
-                        service={service}
-                        slots={slots}
-                        employee={employee}
-                      />
+                      {/* ICI LA TABULATION DES ETAPES : 1/ CALENDRIER 2/CRENEAUX 3/ INFORMATION 4/ CONFIRMATION */}
+                      <Separator className="mb-4" />
+
+                      <form action="">
+                        {currentStep === 1 && (
+                            <Calendar
+                              service={service}
+                              slots={slots}
+                              employee={employee}
+                              setCurrentStep={setCurrentStep}
+                              currentStep={currentStep}
+                              setDaySelected={setDaySelected}
+                            />
+                        )}
+
+                        {currentStep === 2 && (
+                          // CRENEAUX
+                          <Creneaux 
+                          selectedDaySlots={selectedDaySlots}
+                          duration={service.duration}
+                          color={service.color}
+                          />
+                        )}
+
+                        {currentStep === 3 && (
+                          // INFORMATION
+                          <div>3</div>
+                        )}
+
+                        {currentStep === 4 && (
+                          // CONFIRMATION
+                          <div>4</div>
+                        )}
+                      </form>
                     </div>
                   </>
                 )}
