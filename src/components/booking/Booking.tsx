@@ -26,28 +26,21 @@ interface BookingModalProps {
 export default function Booking(props: BookingModalProps) {
   const { open, setOpen, serviceId } = props;
   const [loading, setLoading] = useState(true)
-  
-  
   const cancelButtonRef = useRef(null)
-
-
   const [service, setService] = useState<ServiceProps>({});
-  
+
+
+  // Les states que je vais réutiliser dans mon form
   const [daySelected, setDaySelected] = useState<string>(null);
-
-
-
+  const [hourSelected, setHourSelected] = useState<string>(null);
 
   const [selectedDaySlots, setSelectedDaySlots] = useState<SlotsProps>({});
 
   const [slots, setSlots] = useState<SlotsProps[]>([]);
   const [employee, setEmployee] = useState<UserProps>();
-
-
-
-
   const [occupiedSlots, setOccupiedSlots] = useState<SlotsProps[]>([]);
   const [slotSelectedOccupied, setSlotSelectedOccupied] = useState<SlotsProps>({});
+
   const [busyness, setBusyness] = useState();
 
   useEffect(() => {
@@ -154,7 +147,7 @@ export default function Booking(props: BookingModalProps) {
   
   }, [daySelected, slots]);
 
-
+  console.log(hourSelected, "hourselected")
   // Tabulation
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -250,6 +243,7 @@ export default function Booking(props: BookingModalProps) {
                           selectedDaySlots={selectedDaySlots}
                           duration={service.duration}
                           color={service.color}
+                          setHourSelected={setHourSelected}
                           />
                         )}
 

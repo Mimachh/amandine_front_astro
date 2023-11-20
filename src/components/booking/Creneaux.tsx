@@ -6,10 +6,11 @@ interface CreneauxProps {
   selectedDaySlots: SlotsProps;
   duration: number;
   color: string;
+  setHourSelected: (value: string) => void;
 }
 
 export default function Creneaux(props: CreneauxProps) {
-  const { selectedDaySlots, duration, color } = props;
+  const { selectedDaySlots, duration, color, setHourSelected } = props;
   const [loading, setLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   useEffect(() => {
@@ -48,6 +49,9 @@ export default function Creneaux(props: CreneauxProps) {
               key={startDateTime} className={`rounded-[5px] py-1`}>
                 <button
                 type='button'
+                onClick={() => {
+                    setHourSelected(`${formatHour(startDateTime)}-${formatHour(addDuration(startDateTime, duration))}`);
+                }}
                 >
                     {formatHour(startDateTime)}-{formatHour(addDuration(startDateTime, duration))}
                 </button>
