@@ -7,7 +7,10 @@ import { Button } from '../ui/button';
 import { X } from 'lucide-react';
 import type { ServiceProps } from '../sections/main/Services';
 import Calendar from './Calendar';
-// import { CheckIcon } from '@heroicons/react/24/outline'
+import { Separator } from "@/components/ui/separator"
+import { format,startOfToday } from "date-fns"
+
+
 
 interface BookingModalProps {
   open: boolean | false;
@@ -15,6 +18,34 @@ interface BookingModalProps {
   serviceId: string | null;
 }
 
+
+export type InnerArray = any[];
+export interface SlotsProps {
+  [date: string]: {
+    [hour: string]: InnerArray;
+  };
+}
+
+
+export interface dayOffListArray {
+  id: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  repeat: number;
+}
+export interface UserProps {
+  dayOffList?: dayOffListArray[];
+  description?: string;
+  email: string;
+  firstName: string;
+  id: string;
+  lastName: string;
+  pictureFullPath?: string;
+  pictureThumbPath?: string;
+  status: string;
+
+}
 
 
 export default function Booking(props: BookingModalProps) {
@@ -24,15 +55,29 @@ export default function Booking(props: BookingModalProps) {
 
 
   const [service, setService] = useState<ServiceProps>({});
+  const [slots, setSlots] = useState<SlotsProps[]>([]);
+  const [employee, setEmployee] = useState<UserProps>();
+
+
+  const [occupiedSlots, setOccupiedSlots] = useState();
+  const [busyness, setBusyness] = useState();
 
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchData = async () => {
+
+      const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
+      const employeeID = import.meta.env.PUBLIC_EMPLOYEE_ID;
+      const today = startOfToday();
+      const formattedToday = format(today, "yyyy-MM-dd");
+ 
       setLoading(true);
       const urlSuffixService = `services/${serviceId}`;
-      const urlSuffixSlots = `slots&serviceId=${serviceId}&serviceDuration=3600&providerIds=1&persons=1&excludeAppointmentId=null`;
-      const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
+      const urlSuffixSlots = `slots&serviceId=${serviceId}&startDateTime=${formattedToday}&duration=3600&providerIds=1&persons=1&excludeAppointmentId=null&timeAfter&timeBefore`;
+      const urlSuffixEmployee = `users/providers/${employeeID}`
+      
+
 
       const signal = controller.signal;
 
@@ -43,14 +88,33 @@ export default function Booking(props: BookingModalProps) {
         });
 
         setService(responseService.data.data.service);
-        console.log("service", responseService);
 
-        const responseSlots = await axios.get(`https://www.amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/${urlSuffixSlots}`, {
+
+        const responseSlots = await axios.get(`${ameliaURL}${urlSuffixSlots}`, {
           headers: headers,
           signal: signal,
         });
 
-        console.log("fetch", responseSlots);
+        const responseEmployee = await axios.get(`${ameliaURL}${urlSuffixEmployee}`, {
+          headers: headers,
+          signal: signal,
+        });
+
+
+        const responseSettings = await axios.get(`${ameliaURL}entities&types=settings,resources`, {
+          headers: headers,
+          signal: signal,
+        });
+
+
+
+        // console.log("occupied", responseSlots.data.data.occupied);
+        // console.log("service", responseSettings);
+        // console.log("employe", responseEmployee.data.data.user);
+
+        setEmployee(responseEmployee.data.data.user);
+        setSlots(responseSlots.data.data.slots);
+        // console.log("busyness", responseSlots.data.data.busyness);
         setLoading(false);
       } catch (error) {
         if (error.name === 'AbortError') {
@@ -72,17 +136,10 @@ export default function Booking(props: BookingModalProps) {
     };
   }, [open, serviceId]);
 
-  console.log('service', service)
-
   function durationFormatter(duration: number) {
     return duration / 60;
   }
   return (
-    // <div>
-    //   - Calendrier de date / On clique sur un jour
-    //   - Créneaux qui s'ajout sur le côté.
-    // </div>
-
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
         <Transition.Child
@@ -96,12 +153,12 @@ export default function Booking(props: BookingModalProps) {
         >
           <div
             className={`fixed inset-0 bg-opacity-75 transition-opacity]`}
-            style={{ background: loading ? "grey" : service.color, opacity: "35%" }}
+            style={{ background: loading ? "grey" : service.color, opacity: "25%" }}
           />
         </Transition.Child>
 
         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+          <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -113,16 +170,17 @@ export default function Booking(props: BookingModalProps) {
             >
               <Dialog.Panel
 
-                className="relative transform overflow-hidden outline-primary rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                className="relative transform overflow-hidden outline-primary rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg md:max-w-xl sm:p-6">
                 {loading ? (
                   <Loader />
                 ) : (
                   <>
-                    <div className='fixed top-0 right-0 p-3'>
+                    <div className='fixed top-0 right-0 p-1'>
                       <Button
                         onClick={() => setOpen(false)}
-                        className='px-2 py-0'
-                        size='sm'><X className='w-4 h-4' />
+                        className='px-2 py-2'
+                        variant='secondary'
+                        size='xs'><X className='w-4 h-4' />
                       </Button>
                     </div>
 
@@ -133,24 +191,30 @@ export default function Booking(props: BookingModalProps) {
                             className='w-16 h-full object-cover aspect-auto rounded-md'
                             src={service.pictureThumbPath} alt={service.name} />
                           <div>
-                            <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                            <Dialog.Title as="h3" className="text-base md:text-lg font-semibold leading-6 text-gray-900">
                               Réservation : <span style={{ color: service.color }}>{service.name}</span>
                             </Dialog.Title>
-                            <p className="text-[12px] text-gray-500">
+                            <p className="text-[12px] md:text-[14px] text-gray-500">
                               {service.description}
                             </p>
-                            <div>
-                              <p className='text-[14px] text-gray-500'
-                              >
-                                Durée : <span
-                                  style={{ color: service.color }}
-                                >{durationFormatter(service.duration)}min</span> - A partir de <span style={{ color: service.color }}>{service.price}€</span></p>
-                            </div>
                           </div>
                         </div>
                       </div>
-                      <p className='font-semibold text-[14px]'>Choisissez le jour de votre rendez-vous</p>
-                      <Calendar />
+                      <div className="py-2">
+                        <p className='text-[15px] text-gray-500'
+                        >
+                          <span className="underline">Durée :</span> <span
+                            style={{ color: service.color }}
+                          >{durationFormatter(service.duration)}min</span> - <span className="underline"> A partir de:</span> &nbsp;<span style={{ color: service.color }}>{service.price}€</span> - Paiement sur place</p>
+                      </div>
+                      <p className='font-semibold text-gray-800 text-[18px] pt-1 pb-1'>Choisissez le jour de votre rendez-vous</p>
+                
+                      <Separator className="mb-4"/>
+                      <Calendar
+                        service={service}
+                        slots={slots}
+                        employee={employee}
+                      />
                     </div>
                   </>
                 )}

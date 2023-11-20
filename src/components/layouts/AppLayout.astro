@@ -22,7 +22,7 @@ import NavAstro from "@/components/menus/nav/nav.astro"
 	}
 </script>
 
-<html lang="fr">
+<html lang="fr" class="min-h-screen w-full overflow-X-hidden">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -30,8 +30,14 @@ import NavAstro from "@/components/menus/nav/nav.astro"
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro</title>
 	</head>
-	<body class="bg-backgroundCustom">
-		<NavAstro />
-        <slot />
+	<body>
+		<div class="bg-black pt-2 px-1">
+			<div class="rounded-2xl md:rounded-t-[45px] bg-backgroundCustom min-h-screen">
+				<NavAstro />
+				<slot />
+			</div>
+
+		</div>
+
 	</body>
 </html>

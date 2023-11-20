@@ -3,13 +3,29 @@ import { motion } from "framer-motion"
 import { cn } from '@/lib/utils';
 import { toggleMenuNavButton } from '@/lib/framer';
 import axios from 'axios';
+import {format, startOfToday} from "date-fns"
 
 function NavToggle(props: any) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  
+  const today = startOfToday();
+  const formattedToday = format(today, "yyyy-MM-dd");
+
+
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://www.amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/slots&serviceId=2&serviceDuration=3600&providerIds=1&persons=1&excludeAppointmentId=null', {
+      const response = await axios.get(`https://www.amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/entities&types=employees`, {
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Amelia': '4LT+lvQqlUgLHex341s4iE3ZfwUbiJnizaRBSqTK3peJ',
+          'Accept': "*/*",
+        },
+        // withCredentials: true,
+      });
+
+      const response2 = await axios.get(`https://www.amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/stats&date=${formattedToday},2023-11-20`, {
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
           'Amelia': '4LT+lvQqlUgLHex341s4iE3ZfwUbiJnizaRBSqTK3peJ',
