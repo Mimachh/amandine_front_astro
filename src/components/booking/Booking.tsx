@@ -12,10 +12,18 @@ import type { SlotsProps } from '../types/CalendarTypes';
 import type { UserProps } from '../types/UserTypes';
 import { durationFormatter } from '@/helper/formattedDates';
 import Creneaux from './Creneaux';
-import type { ServiceProps } from '../types/ServiceTypes';
+import type { ExtrasProps, StateExtraObject, ServiceProps } from '../types/ServiceTypes';
 import Tabulation from './Tabulation';
+import Options from "./Options"
+import { ProfileForm } from './FormTest';
 
 
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm, useFieldArray } from "react-hook-form"
+import * as z from "zod"
+import {
+  Form
+} from "@/components/ui/form"
 
 interface BookingModalProps {
   open: boolean | false;
@@ -25,6 +33,7 @@ interface BookingModalProps {
 
 
 export default function Booking(props: BookingModalProps) {
+
   const { open, setOpen, serviceId } = props;
   const [loading, setLoading] = useState(true)
   const cancelButtonRef = useRef(null)
@@ -43,25 +52,28 @@ export default function Booking(props: BookingModalProps) {
   const [occupiedSlots, setOccupiedSlots] = useState<SlotsProps[]>([]);
   const [slotSelectedOccupied, setSlotSelectedOccupied] = useState<SlotsProps>({});
 
+  // LES EXTRAS
+  const [extras, setExtras] = useState<ExtrasProps[]>([]);
+
+  const [stateExtra, setStateExtra] = useState<StateExtraObject>({});
+  console.log(stateExtra, 'quantity')
+
+  // Tabulation
+  const [currentStep, setCurrentStep] = useState(1);
   const [busyness, setBusyness] = useState();
 
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchData = async () => {
-
       const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
       const employeeID = import.meta.env.PUBLIC_EMPLOYEE_ID;
       const today = startOfToday();
       const formattedToday = format(today, "yyyy-MM-dd");
-
       setLoading(true);
       const urlSuffixService = `services/${serviceId}`;
       const urlSuffixSlots = `slots&serviceId=${serviceId}&startDateTime=${formattedToday}&duration=3600&providerIds=1&persons=1&excludeAppointmentId=null&timeAfter&timeBefore`;
       const urlSuffixEmployee = `users/providers/${employeeID}`
-
-
-
       const signal = controller.signal;
 
       try {
@@ -69,35 +81,24 @@ export default function Booking(props: BookingModalProps) {
           headers: headers,
           signal: signal,
         });
-
-        setService(responseService.data.data.service);
-
-
         const responseSlots = await axios.get(`${ameliaURL}${urlSuffixSlots}`, {
           headers: headers,
           signal: signal,
         });
-
         const responseEmployee = await axios.get(`${ameliaURL}${urlSuffixEmployee}`, {
           headers: headers,
           signal: signal,
         });
-
-
         const responseSettings = await axios.get(`${ameliaURL}entities&types=settings,resources`, {
           headers: headers,
           signal: signal,
         });
 
-
+        setService(responseService.data.data.service);
+        setExtras(responseService.data.data.service.extras)
         setOccupiedSlots(responseSlots.data.data.occupied);
-        console.log("occupied", responseSlots.data.data.occupied);
-        // console.log("service", responseSettings);
-        // console.log("employe", responseEmployee.data.data.user);
-        // console.log(responseSlots.data.data.slots)
         setEmployee(responseEmployee.data.data.user);
         setSlots(responseSlots.data.data.slots);
-        // console.log("busyness", responseSlots.data.data.busyness);
         setLoading(false);
       } catch (error) {
         if (error.name === 'AbortError') {
@@ -110,18 +111,18 @@ export default function Booking(props: BookingModalProps) {
     };
 
     if (open) {
+      fetchData();
       setCurrentStep(1);
       setDaySelected(null)
-      fetchData();
+      // Reset les switch et les quantité.
+
     }
-
-
-
     // Cleanup function to abort the fetch if the component is unmounted
     return () => {
       controller.abort();
     };
   }, [open, serviceId]);
+
 
   useEffect(() => {
     // Fonction pour obtenir les créneaux horaires associés à la date sélectionnée
@@ -130,13 +131,11 @@ export default function Booking(props: BookingModalProps) {
       if (daySelected && slots.hasOwnProperty(daySelected)) {
         // Récupérez les créneaux horaires associés à la date sélectionnée
         const slotsSelected = slots[daySelected];
-
         // Récupérez également les créneaux occupés associés à la date sélectionnée
         setSlotSelectedOccupied(occupiedSlots[daySelected]);
         setSelectedDaySlots(slotsSelected);
         return { slotsSelected, slotSelectedOccupied };
       }
-      // Si la date sélectionnée n'existe pas dans le tableau de données, retournez un objet vide
       setSelectedDaySlots(null);
       return { slotsSelected: null, slotSelectedOccupied: null };
     };
@@ -144,14 +143,27 @@ export default function Booking(props: BookingModalProps) {
     // Utilisation de la fonction pour obtenir les créneaux horaires associés à la date sélectionnée
     // const { slotsSelected, slotSelectedOccupied } = getSlotsForSelectedDay();
     getSlotsForSelectedDay()
-    // Faites ce que vous devez avec slotsSelected et slotSelectedOccupied
-    // ...
-
   }, [daySelected, slots]);
 
-  console.log(hourSelected, "hourselected")
-  // Tabulation
-  const [currentStep, setCurrentStep] = useState(1);
+
+
+
+  const formSchema = z.object({
+    username: z.string().min(2).max(50),
+  });
+
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "Karl",
+    },
+  });
+
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+  }
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -221,7 +233,9 @@ export default function Booking(props: BookingModalProps) {
                         >
                           <span className="underline">Durée :</span> <span
                             style={{ color: service.color }}
-                          >{durationFormatter(service.duration)}min</span> - <span className="underline"> A partir de:</span> &nbsp;<span style={{ color: service.color }}>{service.price}€</span> - Paiement sur place</p>
+                          >{durationFormatter(service.duration)}min</span> - <span className="underline"> A partir de:</span> &nbsp;<span className="animate-pulse" style={{ color: service.color }}>
+                            {getPriceWithOptions(service.price, stateExtra)}€  
+                          </span> - Paiement sur place</p>
                       </div>
                       {/* <p className='font-semibold text-gray-800 text-[18px] pt-1 pb-1'>Choisissez le jour de votre rendez-vous</p> */}
 
@@ -232,46 +246,75 @@ export default function Booking(props: BookingModalProps) {
                         currentStep={currentStep}
                         setSelectedSlotIndex={setSelectedSlotIndex}
                         color={service.color}
+                        daySelected={daySelected}
+                        hourSelected={hourSelected}
                       />
 
                       <Separator className="my-2" />
+                      <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
-                      <form action="">
-                        {currentStep === 1 && (
-                          <Calendar
-                            service={service}
-                            slots={slots}
-                            employee={employee}
-                            setCurrentStep={setCurrentStep}
-                            currentStep={currentStep}
-                            setDaySelected={setDaySelected}
-                          />
-                        )}
+                          {currentStep === 1 && (
+                            <Calendar
+                              service={service}
+                              slots={slots}
+                              employee={employee}
+                              setCurrentStep={setCurrentStep}
+                              currentStep={currentStep}
+                              setDaySelected={setDaySelected}
+                            />
+                          )}
 
-                        {currentStep === 2 && (
-                          // CRENEAUX
-                          <Creneaux
-                            selectedDaySlots={selectedDaySlots}
-                            duration={service.duration}
-                            color={service.color}
-                            setHourSelected={setHourSelected}
-                            setCurrentStep={setCurrentStep}
-                            currentStep={currentStep}
-                            selectedSlotIndex={selectedSlotIndex}
-                            setSelectedSlotIndex={setSelectedSlotIndex}
-                          />
-                        )}
+                          {currentStep === 2 && (
+                            // CRENEAUX
+                            <Creneaux
+                              selectedDaySlots={selectedDaySlots}
+                              duration={service.duration}
+                              color={service.color}
+                              setHourSelected={setHourSelected}
+                              setCurrentStep={setCurrentStep}
+                              currentStep={currentStep}
+                              selectedSlotIndex={selectedSlotIndex}
+                              setSelectedSlotIndex={setSelectedSlotIndex}
+                            />
+                          )}
 
-                        {currentStep === 3 && (
-                          // INFORMATION
-                          <div>3</div>
-                        )}
+                          {currentStep === 3 && (
+                            // OPTION
+                            <>
+                              <Options
+                                options={extras}
+                                stateExtra={stateExtra}
+                                setStateExtra={setStateExtra}
+                                color={service.color}
+                              />
+                              <ProfileForm
+                                control={form.control}
+                              />
+                            </>
+                          )}
 
-                        {currentStep === 4 && (
-                          // CONFIRMATION
-                          <div>4</div>
-                        )}
-                      </form>
+                          {currentStep === 4 && (
+                            // INFORMATIONS
+                            <div>4</div>
+                          )}
+
+
+                          {currentStep === 5 && (
+                            // CONFIRMATION
+                            <div>5</div>
+                          )}
+                          <Button type="submit">Submit</Button>
+                        </form>
+                      </Form>
+                      <p className="flex items-center gap-2 justify-end">
+                        <span>A payer sur place : </span>
+                      <span 
+                      style={{
+                        color: service.color
+                      }}
+                      className="font-semibold text-xl">{getPriceWithOptions(service.price, stateExtra)}€</span>   
+                      </p> 
                     </div>
                   </>
                 )}
@@ -283,4 +326,24 @@ export default function Booking(props: BookingModalProps) {
     </Transition.Root>
   )
 
+}
+
+
+function getPriceWithOptions(startedPrice: number, extras:  StateExtraObject): number {
+  if (extras) {
+    for (const key in extras) {
+      if (extras.hasOwnProperty(key)) {
+        const extra = extras[key];
+
+        // Vérifiez si extra a les propriétés nécessaires
+        if (extra) {
+          startedPrice += (extra.quantity * extra.price);
+        } else {
+          console.error("Extra mal formé :", extra);
+        }
+      }
+    }
+  }
+
+  return startedPrice;
 }
