@@ -13,6 +13,7 @@ import type { UserProps } from '../types/UserTypes';
 import { durationFormatter } from '@/helper/formattedDates';
 import Creneaux from './Creneaux';
 import type { ServiceProps } from '../types/ServiceTypes';
+import Tabulation from './Tabulation';
 
 
 
@@ -29,7 +30,8 @@ export default function Booking(props: BookingModalProps) {
   const cancelButtonRef = useRef(null)
   const [service, setService] = useState<ServiceProps>({});
 
-
+  // POUR CONSERVER LE CRENEAUX SELECTIONNE
+  const [selectedSlotIndex, setSelectedSlotIndex] = useState<number | null>(null);
   // Les states que je vais réutiliser dans mon form
   const [daySelected, setDaySelected] = useState<string>(null);
   const [hourSelected, setHourSelected] = useState<string>(null);
@@ -128,7 +130,7 @@ export default function Booking(props: BookingModalProps) {
       if (daySelected && slots.hasOwnProperty(daySelected)) {
         // Récupérez les créneaux horaires associés à la date sélectionnée
         const slotsSelected = slots[daySelected];
-  
+
         // Récupérez également les créneaux occupés associés à la date sélectionnée
         setSlotSelectedOccupied(occupiedSlots[daySelected]);
         setSelectedDaySlots(slotsSelected);
@@ -138,13 +140,13 @@ export default function Booking(props: BookingModalProps) {
       setSelectedDaySlots(null);
       return { slotsSelected: null, slotSelectedOccupied: null };
     };
-  
+
     // Utilisation de la fonction pour obtenir les créneaux horaires associés à la date sélectionnée
     // const { slotsSelected, slotSelectedOccupied } = getSlotsForSelectedDay();
     getSlotsForSelectedDay()
     // Faites ce que vous devez avec slotsSelected et slotSelectedOccupied
     // ...
-  
+
   }, [daySelected, slots]);
 
   console.log(hourSelected, "hourselected")
@@ -153,7 +155,7 @@ export default function Booking(props: BookingModalProps) {
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setOpen}>
+      <Dialog as="div" className="relative z-[500]" initialFocus={cancelButtonRef} onClose={setOpen}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -221,29 +223,42 @@ export default function Booking(props: BookingModalProps) {
                             style={{ color: service.color }}
                           >{durationFormatter(service.duration)}min</span> - <span className="underline"> A partir de:</span> &nbsp;<span style={{ color: service.color }}>{service.price}€</span> - Paiement sur place</p>
                       </div>
-                      <p className='font-semibold text-gray-800 text-[18px] pt-1 pb-1'>Choisissez le jour de votre rendez-vous</p>
-                      {/* ICI LA TABULATION DES ETAPES : 1/ CALENDRIER 2/CRENEAUX 3/ INFORMATION 4/ CONFIRMATION */}
-                      <Separator className="mb-4" />
+                      {/* <p className='font-semibold text-gray-800 text-[18px] pt-1 pb-1'>Choisissez le jour de votre rendez-vous</p> */}
+
+                      <Separator className="my-2" />
+
+                      <Tabulation
+                        setCurrentStep={setCurrentStep}
+                        currentStep={currentStep}
+                        setSelectedSlotIndex={setSelectedSlotIndex}
+                        color={service.color}
+                      />
+
+                      <Separator className="my-2" />
 
                       <form action="">
                         {currentStep === 1 && (
-                            <Calendar
-                              service={service}
-                              slots={slots}
-                              employee={employee}
-                              setCurrentStep={setCurrentStep}
-                              currentStep={currentStep}
-                              setDaySelected={setDaySelected}
-                            />
+                          <Calendar
+                            service={service}
+                            slots={slots}
+                            employee={employee}
+                            setCurrentStep={setCurrentStep}
+                            currentStep={currentStep}
+                            setDaySelected={setDaySelected}
+                          />
                         )}
 
                         {currentStep === 2 && (
                           // CRENEAUX
-                          <Creneaux 
-                          selectedDaySlots={selectedDaySlots}
-                          duration={service.duration}
-                          color={service.color}
-                          setHourSelected={setHourSelected}
+                          <Creneaux
+                            selectedDaySlots={selectedDaySlots}
+                            duration={service.duration}
+                            color={service.color}
+                            setHourSelected={setHourSelected}
+                            setCurrentStep={setCurrentStep}
+                            currentStep={currentStep}
+                            selectedSlotIndex={selectedSlotIndex}
+                            setSelectedSlotIndex={setSelectedSlotIndex}
                           />
                         )}
 
