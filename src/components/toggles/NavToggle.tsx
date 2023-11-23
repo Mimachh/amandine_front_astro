@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { toggleMenuNavButton } from '@/lib/framer';
 import axios from 'axios';
 import {format, startOfToday} from "date-fns"
+import { headers } from '@/helper/AmeliaCall';
 
 function NavToggle(props: any) {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,16 +17,12 @@ function NavToggle(props: any) {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get(`https://www.amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/entities&types=employees`, {
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'Amelia': '4LT+lvQqlUgLHex341s4iE3ZfwUbiJnizaRBSqTK3peJ',
-          'Accept': "*/*",
-        },
+      const response = await axios.get(`https://amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/entities&types=employees`, {
+        headers: headers,
         // withCredentials: true,
       });
 
-      const response2 = await axios.get(`https://www.amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/stats&date=${formattedToday},2023-11-20`, {
+      const response2 = await axios.get(`https://amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/stats&date=${formattedToday},2023-11-20`, {
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
           'Amelia': '4LT+lvQqlUgLHex341s4iE3ZfwUbiJnizaRBSqTK3peJ',

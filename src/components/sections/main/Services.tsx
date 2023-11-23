@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { CalendarDays, Check, Search } from 'lucide-react'
 import axios from 'axios'
-import Booking from "@/components/booking/Booking"
+import Booking from "@/components/booking/Modal"
 import Loader from '@/components/Loader'
 import { headers } from '@/helper/AmeliaCall'
 import type { ServiceProps } from '@/components/types/ServiceTypes'

@@ -24,6 +24,7 @@ import * as z from "zod"
 import {
   Form
 } from "@/components/ui/form"
+import Informations from './Informations';
 
 interface BookingModalProps {
   open: boolean | false;
@@ -56,18 +57,21 @@ export default function Booking(props: BookingModalProps) {
   const [extras, setExtras] = useState<ExtrasProps[]>([]);
 
   const [stateExtra, setStateExtra] = useState<StateExtraObject>({});
-  console.log(stateExtra, 'quantity')
-
   // Tabulation
   const [currentStep, setCurrentStep] = useState(1);
-  const [busyness, setBusyness] = useState();
+
+
+  const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
+  const employeeID = import.meta.env.PUBLIC_EMPLOYEE_ID;
+  const nombreParResa = import.meta.env.PUBLIC_NOMBRE_PERSON_BOOKING;
+  const defaultStatusResa = import.meta.env.PUBLIC_DEFAULT_BOOKING_STATUS
 
   useEffect(() => {
     const controller = new AbortController();
 
     const fetchData = async () => {
-      const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
-      const employeeID = import.meta.env.PUBLIC_EMPLOYEE_ID;
+
+
       const today = startOfToday();
       const formattedToday = format(today, "yyyy-MM-dd");
       setLoading(true);
@@ -93,6 +97,7 @@ export default function Booking(props: BookingModalProps) {
           headers: headers,
           signal: signal,
         });
+        // console.log(responseSettings)
 
         setService(responseService.data.data.service);
         setExtras(responseService.data.data.service.extras)
@@ -114,6 +119,7 @@ export default function Booking(props: BookingModalProps) {
       fetchData();
       setCurrentStep(1);
       setDaySelected(null)
+      setStateExtra({})
       // Reset les switch et les quantité.
 
     }
@@ -149,20 +155,106 @@ export default function Booking(props: BookingModalProps) {
 
 
   const formSchema = z.object({
-    username: z.string().min(2).max(50),
+    nom: z.string().min(2).max(50),
+    prenom: z.string().min(2).max(50),
+    email: z.string().min(5).email(),
+    where: z.string().nullable(),
+    telephone: z.string().min(10).max(10).nullable(),
+    notes: z.string().max(60).nullable()
   });
 
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "Karl",
+      nom: "",
+      prenom: "",
+      email: "",
+      telephone: "",
+      notes: "",
+      where: "",
     },
   });
 
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
+
+    // Ici il faut vérifier les éléments qui sont en state, il faut traiter date et début d'horaire : "2023-10-05 13:00"
+
+
+    // Je pense qu'il faut d'abord créer le user, en vérifiant qu'il n'existe pas déjà.
+    // Puis on récupère via la response, l'id alors crée et on post.
+    // S'il existe déjà on récupère son ID
+    try {
+      const getCustomersURL = `users/customers`
+      const customerVerify = await axios.get(`${ameliaURL}${getCustomersURL}`, {
+        headers: headers,
+      })
+      const users = customerVerify.data.data.users;
+      console.log(customerVerify.data.data.users)
+      let userId = null;
+
+      for (const user of users) {
+        if (user.email === values.email) {
+          userId = user.id;
+          break; // Si la correspondance est trouvée, sortir de la boucle
+        }
+      }
+
+      if (userId === null) {      
+        const createNewCustomer = await axios.post(`${ameliaURL}${getCustomersURL}`,
+          {
+              firstName: values.nom,
+              lastName: values.prenom,
+              phone: `+33${values.telephone}`,
+              email: values.email,
+          },
+          {
+            headers: headers,
+          },
+
+        )
+
+        console.log(createNewCustomer)
+      }
+      if (userId !== null) {
+        console.log(`L'utilisateur avec l'email ${values.email} a l'ID ${userId}`);
+      } else {
+        console.log(`Aucun utilisateur trouvé avec l'email ${values.email}`);
+      }
+      // Si non, je crée le USER
+
+    } catch (error) {
+      console.log(error)
+    }
+
+
+    // POST DU RDV
+    // try {
+    //   const postBookingUrl = `appointments`
+    //   const postBooking = await axios.post(`${ameliaURL}${postBookingUrl}`, {
+    //     headers: headers,
+    //     data : {
+    //       bookingStart: "",
+    //       bookings: [{
+    //         customFields: "{\"1\":{\"label\":\"text\",\"value\":\"\",\"type\":\"text\"}}",
+    //         customerId: "",
+    //         duration: service.duration,
+    //         extras: [],
+    //         persons: nombreParResa,
+    //         status: defaultStatusResa
+    //       }],
+    //       internalNotes: values.notes,
+    //       notifyParticipants: 1,
+    //       providerId: employeeID,
+    //       serviceId: serviceId,
+    //     }
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    // }
+
   }
 
   return (
@@ -234,7 +326,7 @@ export default function Booking(props: BookingModalProps) {
                           <span className="underline">Durée :</span> <span
                             style={{ color: service.color }}
                           >{durationFormatter(service.duration)}min</span> - <span className="underline"> A partir de:</span> &nbsp;<span className="animate-pulse" style={{ color: service.color }}>
-                            {getPriceWithOptions(service.price, stateExtra)}€  
+                            {getPriceWithOptions(service.price, stateExtra)}€
                           </span> - Paiement sur place</p>
                       </div>
                       {/* <p className='font-semibold text-gray-800 text-[18px] pt-1 pb-1'>Choisissez le jour de votre rendez-vous</p> */}
@@ -273,6 +365,7 @@ export default function Booking(props: BookingModalProps) {
                               color={service.color}
                               setHourSelected={setHourSelected}
                               setCurrentStep={setCurrentStep}
+                              daySelected={daySelected}
                               currentStep={currentStep}
                               selectedSlotIndex={selectedSlotIndex}
                               setSelectedSlotIndex={setSelectedSlotIndex}
@@ -287,16 +380,17 @@ export default function Booking(props: BookingModalProps) {
                                 stateExtra={stateExtra}
                                 setStateExtra={setStateExtra}
                                 color={service.color}
-                              />
-                              <ProfileForm
-                                control={form.control}
+                                setCurrentStep={setCurrentStep}
+                                currentStep={currentStep}
                               />
                             </>
                           )}
 
                           {currentStep === 4 && (
                             // INFORMATIONS
-                            <div>4</div>
+                            <Informations
+                              control={form.control}
+                            />
                           )}
 
 
@@ -309,12 +403,12 @@ export default function Booking(props: BookingModalProps) {
                       </Form>
                       <p className="flex items-center gap-2 justify-end">
                         <span>A payer sur place : </span>
-                      <span 
-                      style={{
-                        color: service.color
-                      }}
-                      className="font-semibold text-xl">{getPriceWithOptions(service.price, stateExtra)}€</span>   
-                      </p> 
+                        <span
+                          style={{
+                            color: service.color
+                          }}
+                          className="font-semibold text-xl">{getPriceWithOptions(service.price, stateExtra)}€</span>
+                      </p>
                     </div>
                   </>
                 )}
@@ -329,7 +423,7 @@ export default function Booking(props: BookingModalProps) {
 }
 
 
-function getPriceWithOptions(startedPrice: number, extras:  StateExtraObject): number {
+function getPriceWithOptions(startedPrice: number, extras: StateExtraObject): number {
   if (extras) {
     for (const key in extras) {
       if (extras.hasOwnProperty(key)) {

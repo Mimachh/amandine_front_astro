@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
-import { add, eachDayOfInterval, endOfMonth, endOfWeek, format, getDay, isEqual, isSameMonth, isToday, parse, startOfToday, startOfWeek } from "date-fns"
+import { add, eachDayOfInterval, endOfMonth, endOfWeek, format, getDay, isAfter, isEqual, isSameMonth, isToday, parse, startOfToday, startOfWeek } from "date-fns"
 import { fr } from 'date-fns/locale';
-import type { CalendarProps } from '../types/CalendarTypes'
+import type { CalendarProps, SlotsProps } from '../types/CalendarTypes'
 import { getFormattedCurrentMonthDates, getFormattedDayOffDates } from '@/helper/formattedDates'
+import TitleStep from './TitleStep';
 
 
 
@@ -24,14 +25,14 @@ export default function Calendar(props: CalendarProps) {
     const today = startOfToday();
     const [selectedDay, setSelectedDay] = useState(today)
     const [currentMonth, setCurrentMonth] = useState(format(today, 'MMMM-yyyy'))
-    
+
     let firstDayCurrentMonth = parse(currentMonth, 'MMMM-yyyy', new Date());
     const newDays = eachDayOfInterval({
         start: startOfWeek(firstDayCurrentMonth, { locale: fr }),
         // start: firstDayCurrentMonth,
         end: endOfWeek(endOfMonth(firstDayCurrentMonth), { locale: fr })
     })
-
+    console.log(employee.weekDayList)
 
     // Je m'occupe des slots
     // console.log("slots", slots)
@@ -48,17 +49,17 @@ export default function Calendar(props: CalendarProps) {
 
 
 
-    // function countSlotsForDay(date, slots) {
-    //     const formattedDate = format(date, "yyyy-MM-dd", { locale: fr });
-    //     const slot = slots[formattedDate];
+    function countSlotsForDay(date: Date, slots: SlotsProps[]) {
+        const formattedDate = format(date, "yyyy-MM-dd", { locale: fr });
+        const slot = slots[formattedDate];
 
-    //     if (slot) {
-    //         // Retournez la longueur du tableau d'objets dans le slot
-    //         return Object.values(slot).reduce((count, hourArray) => count + hourArray.length, 0);
-    //     }
+        if (slot) {
+            // Utilisez `as` pour indiquer le type attendu
+            return (Object.values(slot) as any[]).reduce((count, hourArray) => count + hourArray.length, 0);
+        }
 
-    //     return 0; // Aucun slot trouvé pour la date donnée
-    // }
+        return 0; // Aucun slot trouvé pour la date donnée
+    }
 
 
 
@@ -74,6 +75,9 @@ export default function Calendar(props: CalendarProps) {
 
     return (
         <div>
+            <TitleStep
+                title='Choisissez un jour'
+            />
             <div className="flex items-center">
                 <h2 className="flex-auto text-sm font-semibold text-gray-900 capitalize">
                     {format(firstDayCurrentMonth, 'MMMM yyyy', { locale: fr })}
@@ -118,7 +122,7 @@ export default function Calendar(props: CalendarProps) {
                                 setDaySelected(format(day, "yyyy-MM-dd"))
                                 setCurrentStep(currentStep + 1)
                             }}
-                            disabled={day < today || !filteredCurrentMonthDates.includes(format(day, 'yyyy-MM-dd')) && !isToday(day)}
+                            disabled={day < today || !filteredCurrentMonthDates.includes(format(day, 'yyyy-MM-dd')) && !isToday(day) || countSlotsForDay(day, slots) == 0}
                             style={{
                                 backgroundColor: isEqual(day, selectedDay) && isToday(day) ? service.color : undefined,
                                 // background: isEqual(day, selectedDay) && isToday(day) ? `linear-gradient(0deg, transparent 50%, ${service.color} 50%), linear-gradient(0deg, orange 50%, transparent 50%)` : undefined,
@@ -141,9 +145,22 @@ export default function Calendar(props: CalendarProps) {
                         >
                             <div className="relative">
                                 <time dateTime={format(day, "yyyy-MM-dd")}>{format(day, 'd')}</time>
-                                {/* <span className="absolute top-0 right-0 p-1 bg-gray-600 rounded-full text-white">
-                                    {countSlotsForDay(day, slots)}
-                                </span> */}
+
+                               
+                                {countSlotsForDay(day, slots) === 0 && (
+                                    <span
+                                        className='absolute right-1/2 translate-y-1/2 translate-x-1/2 bottom-0 p-1 rounded-full text-xs text-gray-300'>
+                                             {/* Si le jour a 0 créneau, qu'il est dans les jours offs, et qu'il n'apparait pas dans la liste des jours travaillé de l'employé alors il est fermé */}
+                                        {(formattedDayOffDates.includes(format(day, 'yyyy-MM-dd')) || !employee.weekDayList.some((dayOff) => dayOff.dayIndex === getDay(day))) ? (
+                                            <>Fermé</>
+                                        ) : (isAfter(day, today) ? (
+                                            <>Complet</>
+                                        ) : '')}
+                                    </span>
+                                )}
+
+
+
                             </div>
 
                         </button>

@@ -10,5 +10,12 @@ export interface UserProps {
     pictureFullPath?: string;
     pictureThumbPath?: string;
     status: string;
-  
+    weekDayList: weekDayProps[]
+  }
+
+  interface weekDayProps {
+    id: number;
+    dayIndex: number;
+    startTime: string;
+    endTime: string;
   }

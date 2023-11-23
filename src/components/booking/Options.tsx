@@ -14,15 +14,20 @@ import { Switch } from "@/components/ui/switch"
 import { Input } from '../ui/input';
 import { Minus, Plus } from 'lucide-react';
 import { Separator } from '../ui/separator';
+import TitleStep from './TitleStep';
+import { p } from 'dist/_astro/index.bd45b157';
+import { Button } from "@/components/ui/button"
 
 interface OptionsProps {
   options: ExtrasProps[];
   stateExtra: StateExtraObject;
   setStateExtra: React.Dispatch<React.SetStateAction<StateExtraObject>>;
   color: string;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
+  currentStep: number;
 }
 export default function Options(props: OptionsProps) {
-  const { options, stateExtra, setStateExtra, color } = props;
+  const { options, stateExtra, setStateExtra, color, currentStep, setCurrentStep } = props;
 
   const handleSwitchChange = (optionId: string, checked: boolean, price: number) => {
     setStateExtra((prev) => {
@@ -59,6 +64,14 @@ export default function Options(props: OptionsProps) {
   };
   return (
     <>
+      {options.length > 0 ? (
+        <TitleStep
+          title='Quelles extras souhaitez vous?'
+          divClasses='pb-0'
+        />) : (
+        <p className='flex items-center justify-center h-14'>Aucune option disponible sur cette prestation</p>
+      )}
+
       {options &&
         options.map((option, index) => (
           <div key={option.id}>
@@ -143,15 +156,25 @@ export default function Options(props: OptionsProps) {
                 <FormMessage />
               </FormItem>
             )}
-            {index < options.length - 1 && 
-            <Separator  
-            style={{
-              backgroundColor: color
-            }}
-            className='mt-8 w-1/2 mx-auto'/>
+            {index < options.length - 1 &&
+              <Separator
+                style={{
+                  backgroundColor: color
+                }}
+                className='mt-8 w-1/2 mx-auto' />
             }
           </div>
         ))}
+        <Button
+        type="button"
+        onClick={() => {
+          setCurrentStep(currentStep + 1)
+        }}
+        className="rounded-sm"
+        style={{
+          backgroundColor: color
+        }}
+        >Suivant</Button>
     </>
   )
 }

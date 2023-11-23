@@ -21,7 +21,7 @@ const Tabulation: React.FC<TabulationProps> = ({ setCurrentStep, currentStep, se
         { id: 2, name: 'Heure', status: 'upcoming' },
         { id: 3, name: 'Options', status: 'upcoming' },
         { id: 4, name: 'Informations', status: 'upcoming' },
-        { id: 4, name: 'Confirmation', status: 'upcoming' },
+        { id: 5, name: 'Confirmation', status: 'upcoming' },
     ]);
 
     useEffect(() => {
@@ -51,7 +51,7 @@ const Tabulation: React.FC<TabulationProps> = ({ setCurrentStep, currentStep, se
                             disabled={step.id >= currentStep} // Désactive le bouton si l'id est supérieur ou égal à currentStep
                             style={{
                                 borderColor: (step.status === 'complete' || step.status === 'current') ? color : step.status === 'upcomming' ? "lightgrey" : "",
-                                opacity: step.status !== 'complete' ? "55%" : "",
+                                opacity: step.status !== 'current' ? "55%" : "",
                                 color: (step.status === 'complete' || step.status === 'current') ? color : step.status === 'upcomming' ? "lightgrey" : "",
                             }}
                             className={`${step.status === 'complete'
