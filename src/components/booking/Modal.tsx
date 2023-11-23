@@ -60,6 +60,8 @@ export default function Booking(props: BookingModalProps) {
   // Tabulation
   const [currentStep, setCurrentStep] = useState(1);
 
+  const [user, setUser] = useState({});
+
 
   const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
   const employeeID = import.meta.env.PUBLIC_EMPLOYEE_ID;
@@ -158,7 +160,6 @@ export default function Booking(props: BookingModalProps) {
     nom: z.string().min(2).max(50),
     prenom: z.string().min(2).max(50),
     email: z.string().min(5).email(),
-    where: z.string().nullable(),
     telephone: z.string().min(10).max(10).nullable(),
     notes: z.string().max(60).nullable()
   });
@@ -172,21 +173,16 @@ export default function Booking(props: BookingModalProps) {
       email: "",
       telephone: "",
       notes: "",
-      where: "",
     },
   });
 
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
-
-    // Ici il faut vérifier les éléments qui sont en state, il faut traiter date et début d'horaire : "2023-10-05 13:00"
-
-
-    // Je pense qu'il faut d'abord créer le user, en vérifiant qu'il n'existe pas déjà.
-    // Puis on récupère via la response, l'id alors crée et on post.
     // S'il existe déjà on récupère son ID
     try {
+      setLoading(true)
+      // Je cherche le user via son mail
       const getCustomersURL = `users/customers`
       const customerVerify = await axios.get(`${ameliaURL}${getCustomersURL}`, {
         headers: headers,
@@ -194,67 +190,123 @@ export default function Booking(props: BookingModalProps) {
       const users = customerVerify.data.data.users;
       console.log(customerVerify.data.data.users)
       let userId = null;
-
+      // S'il existe je récupère son ID 
       for (const user of users) {
         if (user.email === values.email) {
           userId = user.id;
-          break; // Si la correspondance est trouvée, sortir de la boucle
+          break;
         }
       }
-
-      if (userId === null) {      
+      // S'il n'existe pas je le crée
+      if (userId === null) {
         const createNewCustomer = await axios.post(`${ameliaURL}${getCustomersURL}`,
           {
-              firstName: values.nom,
-              lastName: values.prenom,
-              phone: `+33${values.telephone}`,
-              email: values.email,
+            firstName: values.prenom,
+            lastName: values.nom,
+            phone: `+33${values.telephone}`,
+            email: values.email,
           },
           {
             headers: headers,
           },
 
         )
-
-        console.log(createNewCustomer)
+        setUser(createNewCustomer.data.data.user)
+        userId = createNewCustomer.data.data.user.id;
+        console.log(createNewCustomer.data.data.user)
       }
+      // Si un ID existe ou est crée je post.
       if (userId !== null) {
         console.log(`L'utilisateur avec l'email ${values.email} a l'ID ${userId}`);
+
+        // Je vérifie la validité des states, et je les transforme au bon format.
+        if (isValidDaySelected(daySelected) && isValidHourSelected(hourSelected)) {
+          const formattedDateTime = formatDateTimeForStore(`${daySelected} ${hourSelected}`);
+
+          try {
+            const postBookingUrl = `bookings`
+            // const postBooking = await axios.post(`${ameliaURL}${postBookingUrl}`, {
+            //   type: "appointment",
+            //   bookingStart: formattedDateTime,
+            //   bookings: [{
+            //     customFields: "{\"1\":{\"label\":\"text\",\"value\":\"\",\"type\":\"text\"}}",
+            //     customerId: userId,
+            //     duration: service.duration,
+            //     extras: [],
+            //     persons: nombreParResa,
+            //     status: defaultStatusResa
+            //   }],
+            //   internalNotes: values.notes,
+            //   notifyParticipants: 1,
+            //   providerId: employeeID,
+            //   serviceId: serviceId,
+            // },
+            const postBooking = await axios.post(`${ameliaURL}${postBookingUrl}`, {
+              "type": "appointment",
+              "bookings": [
+                  {
+                      "extras": [],
+                      "customFields": {},
+                      "deposit": true,
+                      "locale": "fr_FR",
+                      "utcOffset": null,
+                      "persons": 1,
+                      "customerId": null,
+                      "customer": {
+                          "id": null,
+                          "firstName": values.prenom,
+                          "lastName": values.nom,
+                          "email": values.email,
+                          "phone": "",
+                          "countryPhoneIso": "",
+                          "externalId": null
+                      },
+                      "duration": service.duration
+                  }
+              ],
+              "payment": {
+                  "gateway": "onSite",
+                  "currency": "USD",
+                  "data": {}
+              },
+              "recaptcha": null,
+              "locale": "en_US",
+              "timeZone": "Europe/Belgrade",
+              "bookingStart": formattedDateTime,
+              "notifyParticipants": 1,
+              "locationId": 1,
+              "providerId": employeeID,
+              "serviceId": serviceId,
+              "utcOffset": null,
+              "recurring": [],
+              "package": [],
+              "couponCode": null,
+              "runInstantPostBookingActions": false
+          },
+              {
+                headers: headers,
+              }
+            );
+
+            console.log(postBooking)
+          } catch (error) {
+            console.log(error);
+          }
+          // Le else de la validité des données
+        } else {
+          return null;
+        }
+
+
+        // Le else de l'utilisateur trouvé via le mail.
       } else {
         console.log(`Aucun utilisateur trouvé avec l'email ${values.email}`);
       }
-      // Si non, je crée le USER
 
+      setLoading(false)
     } catch (error) {
       console.log(error)
     }
-
-
-    // POST DU RDV
-    // try {
-    //   const postBookingUrl = `appointments`
-    //   const postBooking = await axios.post(`${ameliaURL}${postBookingUrl}`, {
-    //     headers: headers,
-    //     data : {
-    //       bookingStart: "",
-    //       bookings: [{
-    //         customFields: "{\"1\":{\"label\":\"text\",\"value\":\"\",\"type\":\"text\"}}",
-    //         customerId: "",
-    //         duration: service.duration,
-    //         extras: [],
-    //         persons: nombreParResa,
-    //         status: defaultStatusResa
-    //       }],
-    //       internalNotes: values.notes,
-    //       notifyParticipants: 1,
-    //       providerId: employeeID,
-    //       serviceId: serviceId,
-    //     }
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
   }
 
   return (
@@ -289,7 +341,9 @@ export default function Booking(props: BookingModalProps) {
               <Dialog.Panel
                 className="relative transform overflow-hidden outline-primary rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg md:max-w-xl sm:p-6">
                 {loading ? (
-                  <Loader />
+                  <div className='min-h-[250px]'>
+                    <Loader />
+                  </div>
                 ) : (
                   <>
                     <div className='fixed top-0 right-0 p-1'>
@@ -388,20 +442,31 @@ export default function Booking(props: BookingModalProps) {
 
                           {currentStep === 4 && (
                             // INFORMATIONS
-                            <Informations
-                              control={form.control}
-                            />
+                            <>
+                              <Informations
+                                control={form.control}
+                              />
+                              <Button
+                                size='lg'
+                                style={{
+                                  backgroundColor: service.color
+                                }}
+                                type="submit">Valider</Button>
+                            </>
+
                           )}
 
 
                           {currentStep === 5 && (
                             // CONFIRMATION
-                            <div>5</div>
+                            <div>
+
+                            </div>
                           )}
-                          <Button type="submit">Submit</Button>
+
                         </form>
                       </Form>
-                      <p className="flex items-center gap-2 justify-end">
+                      <p className="flex items-center gap-2 justify-end mt-4">
                         <span>A payer sur place : </span>
                         <span
                           style={{
@@ -440,4 +505,28 @@ function getPriceWithOptions(startedPrice: number, extras: StateExtraObject): nu
   }
 
   return startedPrice;
+}
+
+
+function formatTimeForStore(timeString: string) {
+  const [hours, minutes] = timeString.split("h");
+  return `${hours}:${minutes}`;
+}
+
+function formatDateTimeForStore(dateTimeString: string) {
+  const [datePart, timePart] = dateTimeString.split(" ");
+  const [startTime] = timePart.split("-");
+  const formattedStartTime = formatTimeForStore(startTime);
+  return `${datePart} ${formattedStartTime}`;
+}
+
+function isValidDaySelected(daySelected: string) {
+  const regex = /^\d{4}-\d{2}-\d{2}$/; // Format attendu : "yyyy-MM-dd"
+  return typeof daySelected === 'string' && regex.test(daySelected);
+}
+
+// Fonction de vérification pour hourSelected
+function isValidHourSelected(hourSelected: string) {
+  const regex = /^\d{2}h\d{2}-\d{2}h\d{2}$/; // Format attendu : "HH:mm-HH:mm"
+  return typeof hourSelected === 'string' && regex.test(hourSelected);
 }

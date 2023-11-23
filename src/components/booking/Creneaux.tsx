@@ -22,8 +22,7 @@ export default function Creneaux(props: CreneauxProps) {
   } = props;
   const [loading, setLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [hasAvailableSlots, setHasAvailableSlots] = useState(true)
-  console.log(selectedDaySlots)
+
   useEffect(() => {
     setLoading(false);
   }, [selectedDaySlots]);

@@ -9,13 +9,6 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 
 import { Input } from "@/components/ui/input"
 import TitleStep from './TitleStep';
@@ -95,46 +88,25 @@ export default function Informations(props: InformationsProps) {
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={control}
-                    name="notes"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Notes supplémentaires</FormLabel>
-                            <FormControl>
-                                <Textarea
-                                    placeholder="Tell us a little bit about yourself"
-                                    className="resize-none"
-                                    {...field}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={control}
-                    name="where"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a verified email to display" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent className='z-[5001]'>
-                                    <SelectItem value="m@example.com">m@example.com</SelectItem>
-                                    <SelectItem value="m@google.com">m@google.com</SelectItem>
-                                    <SelectItem value="m@support.com">m@support.com</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
             </div>
+            <FormField
+                control={control}
+                name="notes"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Notes supplémentaires</FormLabel>
+                        <FormControl>
+                            <Textarea
+                                placeholder="Une allergie ? Un besoin particulier?"
+                                className="resize-none focus-visible:ring-offset-0 focus-visible:ring-0"
+                                {...field}
+                            />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
         </>
     )
 }
