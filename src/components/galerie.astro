@@ -1,0 +1,48 @@
+---
+import AppLayout from "@/components/layouts/AppLayout.astro";
+
+import { getAllGaleriePage } from "@/lib/api/galerie";
+
+// export async function getStaticPaths() {
+//   const galeriePage = await getAllGaleriePage();
+//   return galeriePage.edges.map(({ node }) => {
+//     return {
+//       params: { slug: node.slug },
+//     };
+//   });
+// }
+
+const { slug } = Astro.params;
+const galeriePage = await getAllGaleriePage();
+const images = galeriePage.galerie.imageDeLaGalerie;
+// console.log(images.imageDeLaGalerie)
+---
+
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 px-2">
+    {
+        images.map((image, index) => (
+            <div class="relative group">
+                <img
+                    src={image.image?.sourceUrl}
+                    alt={image.image?.altText}
+                    class="w-full h-full object-cover aspect-auto"
+                />
+                <div class="opacity-0 absolute inset-0 group-hover:opacity-[100%]  flex transition duration-300 ease items-center justify-center">
+                    <div class="absolute inset-0 bg-background/40 z-1"></div>
+                    <div class="z-0">
+                        <h2 class="sr-only">{image.titre}</h2>
+                        <div class="sr-only">{image.description}</div>
+
+                        <h3 class="text-xl">Catégorie(s): </h3>
+                        {image.etiquette.map((element) => (
+                            <div>
+                                <a href="" class="underline">{element.name}</a>
+                            </div>
+                        ))}
+                    </div>
+                 
+                </div>
+            </div>
+        ))
+    }
+</div>

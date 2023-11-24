@@ -77,3 +77,6 @@ export async function fetchAPI(query, { variables } = {}) {
     `);
     return data?.menus?.nodes[0];
   }
+
+
+

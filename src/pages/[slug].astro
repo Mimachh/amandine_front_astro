@@ -1,4 +1,5 @@
 ---
+import Galerie from '@/components/galerie.astro';
 import AppLayout from '@/components/layouts/AppLayout.astro';
 import { getAllPagesWithSlugs, getPageBySlug } from '@/lib/api/api';
 
@@ -10,14 +11,28 @@ export async function getStaticPaths() {
     };
   });
 }
+
 const { slug } = Astro.params;
 const page = await getPageBySlug(slug);
+const isGalleryPage = slug === 'galerie'; // Ajoutez cette condition
+const isPrestationPage = slug === 'mes-prestations'
 ---
 
-
 <AppLayout>
-    <div class="mb-5 text-4xl font-bold">{page.title}</div>
+    <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">{page.title}</div>
+    {isGalleryPage ? (
+      <div>
+        {/* Contenu spécifique pour la page de la galerie */}
+        {/* ... */}
+        <Galerie />
+      </div>
+    ) : isPrestationPage ? (
+      <article class="prose lg:prose-xl">
+        presta
+      </article>
+    ) : (
     <article class="prose lg:prose-xl">
-     {page.content}
-    </article>
+        {page.content}
+      </article>
+    )}
 </AppLayout>

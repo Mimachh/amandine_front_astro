@@ -5,7 +5,8 @@ module.exports = {
   "./src/**/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}",
   "./src/**/**/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"
 ],
-  theme: { content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
+  theme: { 
+    content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
     container: {
       center: true,
       padding: "2rem",
@@ -71,6 +72,13 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
       },
     },
+    fontFamily: {
+      'mclaren': ['McLaren', "sans-serif"],
+      'montserrat': ['Montserrat', "serif"],
+      'gabriela': ['Gabriela', "serif"],
+      'sniglet': ['Sniglet', "serif"],
+      'federicka': ['Fredericka the Great', "serif"]
+    }
   },
   plugins: [
     require("tailwindcss-animate"),

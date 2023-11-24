@@ -21,18 +21,14 @@ function NavToggle(props: any) {
         headers: headers,
         // withCredentials: true,
       });
-
-      const response2 = await axios.get(`https://amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/stats&date=${formattedToday},2023-11-20`, {
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          'Amelia': '4LT+lvQqlUgLHex341s4iE3ZfwUbiJnizaRBSqTK3peJ',
-          'Accept': "*/*",
-        },
-        // withCredentials: true,
+      const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
+      const postBookingNotifcation = await axios.get(`${ameliaURL}appointments/25`,
+      {
+        headers: headers,
       });
 
       // Vous pouvez traiter les données de la réponse ici
-      console.log(response);
+      console.log(postBookingNotifcation);
     } catch (error) {
       // Gérez les erreurs ici
       console.error('Erreur lors de la récupération des services:', error);

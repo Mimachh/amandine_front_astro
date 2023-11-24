@@ -2,36 +2,38 @@ import { Fragment, useRef, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import axios from 'axios';
 import { headers } from '@/helper/AmeliaCall';
-import Loader from '../Loader';
-import { Button } from '../ui/button';
+import Loader from '../Loader.jsx';
+import { Button } from '../ui/button.tsx';
 import { X } from 'lucide-react';
-import Calendar from './Calendar';
+import Calendar from './Calendar.tsx';
 import { Separator } from "@/components/ui/separator"
 import { format, startOfToday } from "date-fns"
-import type { SlotsProps } from '../types/CalendarTypes';
-import type { UserProps } from '../types/UserTypes';
-import { durationFormatter } from '@/helper/formattedDates';
-import Creneaux from './Creneaux';
-import type { ExtrasProps, StateExtraObject, ServiceProps } from '../types/ServiceTypes';
-import Tabulation from './Tabulation';
-import Options from "./Options"
-import { ProfileForm } from './FormTest';
+import type { SlotsProps } from '../types/CalendarTypes.ts';
+import type { UserProps } from '../types/UserTypes.ts';
+import { durationFormatter, formatDateTimeForStore } from '@/helper/formattedDates';
+import Creneaux from './Creneaux.tsx';
+import type {BookingProps} from "../types/BookingTypes.ts"
+import type { ExtrasProps, StateExtraObject, ServiceProps } from '../types/ServiceTypes.ts';
+import Tabulation from './Tabulation.tsx';
+import Options from "./Options.tsx"
+import Confirmation from './Confirmation.tsx';
 
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, useFieldArray } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import * as z from "zod"
 import {
   Form
 } from "@/components/ui/form"
-import Informations from './Informations';
+import Informations from './Informations.tsx';
+import { getPriceWithOptions } from '@/helper/formattedPrice.ts';
+import { transformStateToExtras } from '@/helper/formattedExtras.ts';
 
 interface BookingModalProps {
   open: boolean | false;
   setOpen: (value: boolean) => void;
   serviceId: string | null;
 }
-
 
 export default function Booking(props: BookingModalProps) {
 
@@ -60,13 +62,12 @@ export default function Booking(props: BookingModalProps) {
   // Tabulation
   const [currentStep, setCurrentStep] = useState(1);
 
-  const [user, setUser] = useState({});
-
-
   const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
   const employeeID = import.meta.env.PUBLIC_EMPLOYEE_ID;
   const nombreParResa = import.meta.env.PUBLIC_NOMBRE_PERSON_BOOKING;
   const defaultStatusResa = import.meta.env.PUBLIC_DEFAULT_BOOKING_STATUS
+  const [bookingValidated, setBookingValidated] = useState<BookingProps>()
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -81,7 +82,7 @@ export default function Booking(props: BookingModalProps) {
       const urlSuffixSlots = `slots&serviceId=${serviceId}&startDateTime=${formattedToday}&duration=3600&providerIds=1&persons=1&excludeAppointmentId=null&timeAfter&timeBefore`;
       const urlSuffixEmployee = `users/providers/${employeeID}`
       const signal = controller.signal;
-
+ 
       try {
         const responseService = await axios.get(`${ameliaURL}${urlSuffixService}`, {
           headers: headers,
@@ -95,12 +96,6 @@ export default function Booking(props: BookingModalProps) {
           headers: headers,
           signal: signal,
         });
-        const responseSettings = await axios.get(`${ameliaURL}entities&types=settings,resources`, {
-          headers: headers,
-          signal: signal,
-        });
-        // console.log(responseSettings)
-
         setService(responseService.data.data.service);
         setExtras(responseService.data.data.service.extras)
         setOccupiedSlots(responseSlots.data.data.occupied);
@@ -122,10 +117,8 @@ export default function Booking(props: BookingModalProps) {
       setCurrentStep(1);
       setDaySelected(null)
       setStateExtra({})
-      // Reset les switch et les quantité.
-
+      form.reset()
     }
-    // Cleanup function to abort the fetch if the component is unmounted
     return () => {
       controller.abort();
     };
@@ -135,11 +128,8 @@ export default function Booking(props: BookingModalProps) {
   useEffect(() => {
     // Fonction pour obtenir les créneaux horaires associés à la date sélectionnée
     const getSlotsForSelectedDay = () => {
-      // Vérifiez si daySelected est défini et existe dans le tableau de données
       if (daySelected && slots.hasOwnProperty(daySelected)) {
-        // Récupérez les créneaux horaires associés à la date sélectionnée
         const slotsSelected = slots[daySelected];
-        // Récupérez également les créneaux occupés associés à la date sélectionnée
         setSlotSelectedOccupied(occupiedSlots[daySelected]);
         setSelectedDaySlots(slotsSelected);
         return { slotsSelected, slotSelectedOccupied };
@@ -147,14 +137,13 @@ export default function Booking(props: BookingModalProps) {
       setSelectedDaySlots(null);
       return { slotsSelected: null, slotSelectedOccupied: null };
     };
-
-    // Utilisation de la fonction pour obtenir les créneaux horaires associés à la date sélectionnée
-    // const { slotsSelected, slotSelectedOccupied } = getSlotsForSelectedDay();
     getSlotsForSelectedDay()
   }, [daySelected, slots]);
 
 
 
+
+ 
 
   const formSchema = z.object({
     nom: z.string().min(2).max(50),
@@ -179,73 +168,20 @@ export default function Booking(props: BookingModalProps) {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
-    // S'il existe déjà on récupère son ID
-    try {
+    console.log({stateExtra})
       setLoading(true)
       // Je cherche le user via son mail
-      const getCustomersURL = `users/customers`
-      const customerVerify = await axios.get(`${ameliaURL}${getCustomersURL}`, {
-        headers: headers,
-      })
-      const users = customerVerify.data.data.users;
-      console.log(customerVerify.data.data.users)
-      let userId = null;
-      // S'il existe je récupère son ID 
-      for (const user of users) {
-        if (user.email === values.email) {
-          userId = user.id;
-          break;
-        }
-      }
-      // S'il n'existe pas je le crée
-      if (userId === null) {
-        const createNewCustomer = await axios.post(`${ameliaURL}${getCustomersURL}`,
-          {
-            firstName: values.prenom,
-            lastName: values.nom,
-            phone: `+33${values.telephone}`,
-            email: values.email,
-          },
-          {
-            headers: headers,
-          },
-
-        )
-        setUser(createNewCustomer.data.data.user)
-        userId = createNewCustomer.data.data.user.id;
-        console.log(createNewCustomer.data.data.user)
-      }
-      // Si un ID existe ou est crée je post.
-      if (userId !== null) {
-        console.log(`L'utilisateur avec l'email ${values.email} a l'ID ${userId}`);
-
         // Je vérifie la validité des states, et je les transforme au bon format.
-        if (isValidDaySelected(daySelected) && isValidHourSelected(hourSelected)) {
+        // if (isValidDaySelected(daySelected) && isValidHourSelected(hourSelected)) {
           const formattedDateTime = formatDateTimeForStore(`${daySelected} ${hourSelected}`);
 
           try {
             const postBookingUrl = `bookings`
-            // const postBooking = await axios.post(`${ameliaURL}${postBookingUrl}`, {
-            //   type: "appointment",
-            //   bookingStart: formattedDateTime,
-            //   bookings: [{
-            //     customFields: "{\"1\":{\"label\":\"text\",\"value\":\"\",\"type\":\"text\"}}",
-            //     customerId: userId,
-            //     duration: service.duration,
-            //     extras: [],
-            //     persons: nombreParResa,
-            //     status: defaultStatusResa
-            //   }],
-            //   internalNotes: values.notes,
-            //   notifyParticipants: 1,
-            //   providerId: employeeID,
-            //   serviceId: serviceId,
-            // },
             const postBooking = await axios.post(`${ameliaURL}${postBookingUrl}`, {
               "type": "appointment",
               "bookings": [
                   {
-                      "extras": [],
+                      "extras": transformStateToExtras(stateExtra),
                       "customFields": {},
                       "deposit": true,
                       "locale": "fr_FR",
@@ -270,8 +206,8 @@ export default function Booking(props: BookingModalProps) {
                   "data": {}
               },
               "recaptcha": null,
-              "locale": "en_US",
-              "timeZone": "Europe/Belgrade",
+              "locale": "fr_FR",
+              "timeZone": "Europe/Paris",
               "bookingStart": formattedDateTime,
               "notifyParticipants": 1,
               "locationId": 1,
@@ -289,24 +225,37 @@ export default function Booking(props: BookingModalProps) {
             );
 
             console.log(postBooking)
+            setBookingValidated(postBooking.data.data)
+            const postBookingID = postBooking.data.data.appointment.id;
+            const postBookingPaiementID = postBooking.data.data.paymentId;
+            const postBookingCustomerID = postBooking.data.data.booking.customerId;
+            try {
+              const postBookingNotifcation = await axios.post(`${ameliaURL}bookings/success/${postBookingID}`, {
+                "type": "appointment",
+                "appointmentStatusChanged": false,
+                "recurring": [],
+                "packageId": null,
+                "customerId": postBookingCustomerID,
+                "paymentId": postBookingPaiementID,
+                "packageCustomerId": null
+              },
+              {
+                headers: headers,
+              });
+              console.log(postBookingNotifcation)
+            } catch (error) {
+              console.log(error)
+            }
+            setCurrentStep(currentStep + 1)
+            setLoading(false)
           } catch (error) {
             console.log(error);
           }
           // Le else de la validité des données
-        } else {
-          return null;
-        }
-
-
-        // Le else de l'utilisateur trouvé via le mail.
-      } else {
-        console.log(`Aucun utilisateur trouvé avec l'email ${values.email}`);
-      }
-
-      setLoading(false)
-    } catch (error) {
-      console.log(error)
-    }
+        // } else {
+        //   return null;
+        // }
+    
   }
 
   return (
@@ -458,10 +407,12 @@ export default function Booking(props: BookingModalProps) {
 
 
                           {currentStep === 5 && (
-                            // CONFIRMATION
-                            <div>
-
-                            </div>
+                            //CONFIRMATION
+                            <Confirmation 
+                            setOpen={setOpen}
+                            color={service.color}
+                            bookingValidated={bookingValidated}
+                            />
                           )}
 
                         </form>
@@ -487,39 +438,6 @@ export default function Booking(props: BookingModalProps) {
 
 }
 
-
-function getPriceWithOptions(startedPrice: number, extras: StateExtraObject): number {
-  if (extras) {
-    for (const key in extras) {
-      if (extras.hasOwnProperty(key)) {
-        const extra = extras[key];
-
-        // Vérifiez si extra a les propriétés nécessaires
-        if (extra) {
-          startedPrice += (extra.quantity * extra.price);
-        } else {
-          console.error("Extra mal formé :", extra);
-        }
-      }
-    }
-  }
-
-  return startedPrice;
-}
-
-
-function formatTimeForStore(timeString: string) {
-  const [hours, minutes] = timeString.split("h");
-  return `${hours}:${minutes}`;
-}
-
-function formatDateTimeForStore(dateTimeString: string) {
-  const [datePart, timePart] = dateTimeString.split(" ");
-  const [startTime] = timePart.split("-");
-  const formattedStartTime = formatTimeForStore(startTime);
-  return `${datePart} ${formattedStartTime}`;
-}
-
 function isValidDaySelected(daySelected: string) {
   const regex = /^\d{4}-\d{2}-\d{2}$/; // Format attendu : "yyyy-MM-dd"
   return typeof daySelected === 'string' && regex.test(daySelected);
@@ -530,3 +448,6 @@ function isValidHourSelected(hourSelected: string) {
   const regex = /^\d{2}h\d{2}-\d{2}h\d{2}$/; // Format attendu : "HH:mm-HH:mm"
   return typeof hourSelected === 'string' && regex.test(hourSelected);
 }
+
+
+

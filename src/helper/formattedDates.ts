@@ -30,4 +30,18 @@ export function getFormattedCurrentMonthDates(slots: Record<string, any>, newDay
 
 export function durationFormatter(duration: number) {
     return duration / 60;
-  }
+}
+
+
+
+export function formatTimeForStore(timeString: string) {
+    const [hours, minutes] = timeString.split("h");
+    return `${hours}:${minutes}`;
+}
+
+export function formatDateTimeForStore(dateTimeString: string) {
+    const [datePart, timePart] = dateTimeString.split(" ");
+    const [startTime] = timePart.split("-");
+    const formattedStartTime = formatTimeForStore(startTime);
+    return `${datePart} ${formattedStartTime}`;
+}
