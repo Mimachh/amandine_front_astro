@@ -35,6 +35,7 @@ export default function Creneaux(props: CreneauxProps) {
     <div>
       <TitleStep
         title='Choisissez une heure'
+        titleClasses="text-gray-800"
       />
       {/* Afficher les créneaux ici */}
       {selectedDaySlots && (

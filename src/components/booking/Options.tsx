@@ -67,14 +67,14 @@ export default function Options(props: OptionsProps) {
       {options.length > 0 ? (
         <TitleStep
           title='Quelles extras souhaitez vous?'
-          divClasses='pb-0'
+          divClasses='pb-0 text-gray-800'
         />) : (
-        <p className='flex items-center justify-center h-14'>Aucune option disponible sur cette prestation</p>
+        <p className='flex items-center justify-center h-14 '>Aucune option disponible sur cette prestation</p>
       )}
 
       {options &&
         options.map((option, index) => (
-          <div key={option.id}>
+          <div key={option.id} className='text-gray-800'>
             <FormField
               name={`${option.name}-${option.id}`}
               render={({ field }) => (
@@ -87,6 +87,7 @@ export default function Options(props: OptionsProps) {
                   </div>
                   <FormControl>
                     <Switch
+                    className='text-gray-100'
                       style={{
                         backgroundColor: stateExtra[option.id]?.switch ? color : ""
                       }}
@@ -123,7 +124,7 @@ export default function Options(props: OptionsProps) {
                     </button>
                     <div>
                       <Input
-                        className="rounded-none border-x-0 pr-0 text-center w-24 focus:ring-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="bg-white rounded-none border-x-0 pr-0 text-center w-24 focus:ring-none focus-visible:ring-0 focus-visible:ring-offset-0"
                         type="number"
                         readOnly
                         step={1}

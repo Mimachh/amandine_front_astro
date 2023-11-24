@@ -55,7 +55,7 @@ export default function Confirmation(props: ConfirmationProps) {
   }, [extrasBooked]);
 
   return (
-    <div>
+    <div className='text-gray-800'>
       {loading ? (
         <Loader />
       ) : (

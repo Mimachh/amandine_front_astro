@@ -25,8 +25,9 @@ export default function Informations(props: InformationsProps) {
         <>
             <TitleStep
                 title='Informations supplémentaires'
+                titleClasses='text-gray-800'
             />
-            <div className='grid grid-cols-2 gap-3'>
+            <div className='grid grid-cols-2 gap-3 text-gray-800'>
                 <FormField
                     control={control}
                     name="nom"
@@ -35,7 +36,7 @@ export default function Informations(props: InformationsProps) {
                             <FormLabel>Nom *</FormLabel>
                             <FormControl>
                                 <Input
-                                    className="focus-visible:ring-offset-0 focus-visible:ring-0"
+                                    className="focus-visible:ring-offset-0 focus-visible:ring-0 bg-white"
                                     placeholder="Votre nom" {...field} />
                             </FormControl>
                             <FormMessage />
@@ -50,7 +51,7 @@ export default function Informations(props: InformationsProps) {
                             <FormLabel>Prénom *</FormLabel>
                             <FormControl>
                                 <Input
-                                    className="focus-visible:ring-offset-0 focus-visible:ring-0"
+                                    className="focus-visible:ring-offset-0 focus-visible:ring-0 bg-white"
                                     placeholder="Votre prénom" {...field} />
                             </FormControl>
                             <FormMessage />
@@ -66,7 +67,7 @@ export default function Informations(props: InformationsProps) {
                             <FormControl>
                                 <Input
                                     type='email'
-                                    className="focus-visible:ring-offset-0 focus-visible:ring-0"
+                                    className="focus-visible:ring-offset-0 focus-visible:ring-0 bg-white"
                                     placeholder="Votre mail" {...field} />
                             </FormControl>
                             <FormMessage />
@@ -81,7 +82,7 @@ export default function Informations(props: InformationsProps) {
                             <FormLabel>Téléphone *</FormLabel>
                             <FormControl>
                                 <Input
-                                    className="focus-visible:ring-offset-0 focus-visible:ring-0"
+                                    className="focus-visible:ring-offset-0 focus-visible:ring-0 bg-white"
                                     placeholder="Votre téléphone" {...field} />
                             </FormControl>
                             <FormMessage />
@@ -95,11 +96,11 @@ export default function Informations(props: InformationsProps) {
                 name="notes"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Notes supplémentaires</FormLabel>
+                        <FormLabel className='text-gray-800'>Notes supplémentaires</FormLabel>
                         <FormControl>
                             <Textarea
                                 placeholder="Une allergie ? Un besoin particulier?"
-                                className="resize-none focus-visible:ring-offset-0 focus-visible:ring-0"
+                                className="resize-none focus-visible:ring-offset-0 focus-visible:ring-0 bg-white"
                                 {...field}
                             />
                         </FormControl>

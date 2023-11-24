@@ -417,7 +417,7 @@ export default function Booking(props: BookingModalProps) {
 
                         </form>
                       </Form>
-                      <p className="flex items-center gap-2 justify-end mt-4">
+                      <p className="flex items-center gap-2 justify-end mt-4 text-gray-800">
                         <span>A payer sur place : </span>
                         <span
                           style={{

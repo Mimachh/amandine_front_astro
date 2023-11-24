@@ -1,6 +1,7 @@
 ---
 import Galerie from '@/components/galerie.astro';
 import AppLayout from '@/components/layouts/AppLayout.astro';
+import About from '@/components/sections/about.astro';
 import { getAllPagesWithSlugs, getPageBySlug } from '@/lib/api/api';
 
 export async function getStaticPaths() {
@@ -12,25 +13,40 @@ export async function getStaticPaths() {
   });
 }
 
+
+import { getMainPage } from "@/lib/api/mainPage";
+import type { PageData } from "@/lib/api/mainPage";
+
+
+
+const dataPage = (await getMainPage()) as PageData;
+const about = dataPage.page.aboutSection
+
 const { slug } = Astro.params;
 const page = await getPageBySlug(slug);
 const isGalleryPage = slug === 'galerie'; // Ajoutez cette condition
 const isPrestationPage = slug === 'mes-prestations'
+const isAboutPage = slug === 'a-propos'
 ---
 
 <AppLayout>
-    <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">{page.title}</div>
     {isGalleryPage ? (
       <div>
+        <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">{page.title}</div>
         {/* Contenu spécifique pour la page de la galerie */}
         {/* ... */}
         <Galerie />
       </div>
     ) : isPrestationPage ? (
+    <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">{page.title}</div>
       <article class="prose lg:prose-xl">
         presta
       </article>
-    ) : (
+    ) : isAboutPage ? (
+      <About about={about}/>
+    ) 
+    : (
+    <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">{page.title}</div>
     <article class="prose lg:prose-xl">
         {page.content}
       </article>
