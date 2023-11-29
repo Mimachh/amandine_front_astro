@@ -15,7 +15,6 @@ import { Input } from '../ui/input';
 import { Minus, Plus } from 'lucide-react';
 import { Separator } from '../ui/separator';
 import TitleStep from './TitleStep';
-import { p } from 'dist/_astro/index.bd45b157';
 import { Button } from "@/components/ui/button"
 
 interface OptionsProps {

@@ -8,5 +8,5 @@ export default defineConfig({
   integrations: [react(), tailwind({
     applyBaseStyles: false,
   })],
-  output: "hybrid"
+  // output: "hybrid"
 });

@@ -10,14 +10,21 @@ import OpenCalendar from "@/components/toggles/OpenCalendar";
 import Meta from "@/components/Meta.astro";
 // Ici je récupère tout en fetch, serverside.
 const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
-export const prerender = false;
+// export const prerender = false;
 let serviceId = null;
-let serviceData: ServiceProps | null = null;
+
 let color: string | undefined = "";
 let category: string | null = "";
 
 const { slug } = Astro.params;
-try {
+
+async function getServiceData(slug: string) {
+  const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
+  let serviceId = null;
+  let serviceData = null;
+  let color = "";
+  let category = null;
+
   const services = await fetch(`${ameliaURL}services`, {
     method: "GET",
     headers: headers,
@@ -32,13 +39,10 @@ try {
   const servicesData = await services.json();
   const servicesList = await servicesData.data.services;
 
-  const matchingService = servicesList.find(
-    (service: any) => service.name === slug,
-  );
+  const matchingService = servicesList.find((service) => service.name === slug);
 
   if (matchingService) {
     serviceId = matchingService.id;
-    // Faites quelque chose avec serviceId
     const serviceResponseRaw = await fetch(
       `${ameliaURL}services/${serviceId}`,
       {
@@ -62,8 +66,11 @@ try {
 
       if (categoryFetch.ok) {
         const categoryResponse = await categoryFetch.json();
-        console.log(categoryResponse);
         category = categoryResponse.data.category.name;
+      } else {
+        console.log(
+          `Erreur lors de la requête pour la catégorie ${serviceData.categoryId}: ${categoryFetch.status} - ${categoryFetch.statusText}`,
+        );
       }
     } else {
       console.log(
@@ -73,10 +80,96 @@ try {
   } else {
     console.log(`Aucun service trouvé avec le slug ${slug}`);
   }
-} catch (error) {
-  console.error("Erreur lors de la récupération des données:", error.message);
+
+  return { category, serviceData };
 }
 
+export async function getStaticPaths() {
+  const services = await getAllAmeliaServices();
+  // Récupérez la liste des paramètres nécessaires
+  // Vous devrez peut-être adapter cela en fonction de la structure exacte des données
+  // Utilisez await ici
+  const paths = services.map((service) => ({
+    params: { slug: service.name },
+  }));
+  console.log(paths)
+  return paths;
+  
+}
+let serviceData: ServiceProps | null = null;
+
+export async function getAllAmeliaServices() {
+  const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
+  const services = await fetch(`${ameliaURL}services`, {
+    method: "GET",
+    headers: headers,
+  });
+  if (!services.ok) {
+    throw new Error(
+      `Erreur de requête: ${services.status} - ${services.statusText}`,
+    );
+  }
+  const servicesData = await services.json();
+  const servicesList = await servicesData.data.services;
+
+  return servicesList;
+}
+
+async function getAmeliaServiceBySlug(slug: string) {
+  let serviceDataFunction: ServiceProps | null = null;
+  const services = await getAllAmeliaServices();
+  const matchingService = services.find((service) => service.name === slug);
+  if (matchingService) {
+    serviceId = matchingService.id;
+    const serviceResponseRaw = await fetch(
+      `${ameliaURL}services/${serviceId}`,
+      {
+        method: "GET",
+        headers: headers,
+      },
+    );
+
+    if (serviceResponseRaw.ok) {
+      const serviceResponse = await serviceResponseRaw.json();
+      serviceDataFunction = serviceResponse.data.service;
+      color = serviceDataFunction?.color;
+
+      const categoryFetch = await fetch(
+        `${ameliaURL}categories/${serviceDataFunction.categoryId}`,
+        {
+          method: "GET",
+          headers: headers,
+        },
+      );
+
+      if (categoryFetch.ok) {
+        const categoryResponse = await categoryFetch.json();
+        category = categoryResponse.data.category.name;
+      } else {
+        console.log(
+          `Erreur lors de la requête pour la catégorie ${serviceDataFunction.categoryId}: ${categoryFetch.status} - ${categoryFetch.statusText}`,
+        );
+      }
+    } else {
+      console.log(
+        `Erreur lors de la requête pour le service ${serviceId}: ${serviceResponseRaw.status} - ${serviceResponseRaw.statusText}`,
+      );
+    }
+  } else {
+    console.log(`Aucun service trouvé avec le slug ${slug}`);
+  }
+
+  return serviceDataFunction;
+}
+
+const service = await getAmeliaServiceBySlug(slug).then((res) => {
+    // console.log({ res });
+    serviceData = res;
+  })
+  .catch((error) => {
+    console.error("Une erreur s'est produite :", error);
+  });
+console.log({serviceData})
 ---
 
 <head>
@@ -122,11 +215,16 @@ Découvrez l'excellence en matière de ${serviceData?.name} dans la région du M
   <div>
     <div
       class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8"
-      itemscope itemtype="https://schema.org/LocalBusiness"
+      itemscope
+      itemtype="https://schema.org/LocalBusiness"
     >
-    <span itemprop="name" class="sr-only">Amandine Gorsse Prothésiste Ongulaire</span>
-      <div class="lg:max-w-lg lg:self-end"
-      itemscope itemtype="https://schema.org/Service"
+      <span itemprop="name" class="sr-only"
+        >Amandine Gorsse Prothésiste Ongulaire</span
+      >
+      <div
+        class="lg:max-w-lg lg:self-end"
+        itemscope
+        itemtype="https://schema.org/Service"
       >
         <nav aria-label="Breadcrumb">
           <ol role="list" class="flex items-center space-x-2">
@@ -210,9 +308,7 @@ Découvrez l'excellence en matière de ${serviceData?.name} dans la région du M
           </div>
 
           <div class="mt-4 space-y-6">
-            <p class="text-base text-gray-500"
-            itemprop="description"
-            >
+            <p class="text-base text-gray-500" itemprop="description">
               {serviceData?.description}
             </p>
           </div>
@@ -242,7 +338,7 @@ Découvrez l'excellence en matière de ${serviceData?.name} dans la région du M
       <div class="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
         <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
           <img
-          itemprop="image"
+            itemprop="image"
             src={serviceData?.pictureFullPath}
             alt={serviceData?.name}
             class="h-full w-full object-cover object-center"
@@ -344,16 +440,18 @@ Découvrez l'excellence en matière de ${serviceData?.name} dans la région du M
       </div>
       <div>
         <div
-        itemprop="address" itemscope itemtype="https://schema.org/PostalAddress"
+          itemprop="address"
+          itemscope
+          itemtype="https://schema.org/PostalAddress"
         >
-          <span class="text-xs"
-          itemprop="streetAddress"
-          > *Adresse : <span itemprop="addressLocality">Laigné en Belin,</span> <span itemprop="postalCode">72220</span>, Sarthe, <span itemprop="addressCountry">France</span></span>
+          <span class="text-xs" itemprop="streetAddress">
+            *Adresse : <span itemprop="addressLocality">Laigné en Belin,</span>
+            <span itemprop="postalCode">72220</span>, Sarthe, <span
+              itemprop="addressCountry">France</span
+            ></span
+          >
         </div>
       </div>
-
-
     </div>
-   
   </div>
 </AppLayout>
