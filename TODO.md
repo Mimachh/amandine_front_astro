@@ -16,3 +16,10 @@ Ou créer un service je vous accueille / je me déplace chez vous
 - index avec les prestations
 - single avec titre / description / galerie. C'est surtout ici que les schemas seront importants.
 // schema + mots clés + descriptions.
+
+
+SCHEMA :
+- page principale :
+- galerie : type porfolio
+- page mes prestations : en react du coup.
+- sur chaque service

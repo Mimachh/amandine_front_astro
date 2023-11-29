@@ -1,3 +1,5 @@
+import type { StateExtraObject } from "@/components/types/ServiceTypes";
+
 export function transformStateToExtras(stateExtra: StateExtraObject) {
     // Filtrer les éléments avec switch à true
     const selectedExtras = Object.entries(stateExtra)

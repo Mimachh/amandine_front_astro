@@ -6,6 +6,7 @@ import Loader from '@/components/Loader'
 import { headers } from '@/helper/AmeliaCall'
 import type { ServiceProps } from '@/components/types/ServiceTypes'
 import { durationFormatter } from '@/helper/formattedDates'
+import { bonusSupplementaires } from '@/lib/utils'
 
 
 export default function Services() {
@@ -42,6 +43,7 @@ export default function Services() {
     fetchData();
   }, []);
 
+  // console.log({services})
   return (
     <>
       <Booking
@@ -113,7 +115,7 @@ export default function Services() {
                       </button>
                     </li>
                     <li className="flex justify-center">
-                      <a href="" className="text-accent-foreground hover:text-primary dark:text-background dark:hover:text-primary transition-colors ease">
+                      <a href={`/mes-prestations/${service.name}`} className="text-accent-foreground hover:text-primary dark:text-background dark:hover:text-primary transition-colors ease">
                         <span className="sr-only">Voir les galeries</span>
                         <Search
                         />
@@ -133,13 +135,3 @@ export default function Services() {
 }
 
 
-const bonusSupplementaires = [
-  {
-    id: 1,
-    title: "Paiement sur place",
-  },
-  {
-    id: 2,
-    title: "Café ou chocolat offert",
-  },
-]

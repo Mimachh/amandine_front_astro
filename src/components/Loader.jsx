@@ -1,12 +1,16 @@
 import React from 'react'
 import { ColorRing } from  'react-loader-spinner'
-export default function Loader() {
+
+
+
+export default function Loader({ height = '80px', width = '80px' }) {
+
   return (
     <div className='w-full h-fit flex items-center justify-center'>
       <ColorRing
         visible={true}
-        height="80"
-        width="80"
+        height={height}
+        width={width}
         ariaLabel="blocks-loading"
         wrapperStyle={{}}
         wrapperClass="blocks-wrapper"

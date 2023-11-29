@@ -3,7 +3,7 @@ import Galerie from '@/components/galerie.astro';
 import AppLayout from '@/components/layouts/AppLayout.astro';
 import About from '@/components/sections/about.astro';
 import { getAllPagesWithSlugs, getPageBySlug } from '@/lib/api/api';
-
+import Prestations from "@/components/prestations.astro"
 export async function getStaticPaths() {
   const pagesWithSlugs = await getAllPagesWithSlugs();
   return pagesWithSlugs.edges.map(({ node }) => {
@@ -16,6 +16,7 @@ export async function getStaticPaths() {
 
 import { getMainPage } from "@/lib/api/mainPage";
 import type { PageData } from "@/lib/api/mainPage";
+import Services from '@/components/sections/main/Services';
 
 
 
@@ -38,9 +39,8 @@ const isAboutPage = slug === 'a-propos'
         <Galerie />
       </div>
     ) : isPrestationPage ? (
-    <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">{page.title}</div>
-      <article class="prose lg:prose-xl">
-        presta
+      <article class="w-full">
+        <Prestations />
       </article>
     ) : isAboutPage ? (
       <About about={about}/>

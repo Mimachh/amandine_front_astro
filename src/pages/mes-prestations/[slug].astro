@@ -1,0 +1,359 @@
+---
+import { SEOMetadata } from "astro-seo-metadata";
+import AppLayout from "../../components/layouts/AppLayout.astro";
+import { headers } from "../../helper/AmeliaCall";
+import { durationFormatter } from "../../helper/formattedDates";
+import type { ServiceProps } from "../../components/types/ServiceTypes";
+
+import { bonusSupplementaires } from "../../lib/utils";
+import OpenCalendar from "@/components/toggles/OpenCalendar";
+import Meta from "@/components/Meta.astro";
+// Ici je récupère tout en fetch, serverside.
+const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
+export const prerender = false;
+let serviceId = null;
+let serviceData: ServiceProps | null = null;
+let color: string | undefined = "";
+let category: string | null = "";
+
+const { slug } = Astro.params;
+try {
+  const services = await fetch(`${ameliaURL}services`, {
+    method: "GET",
+    headers: headers,
+  });
+
+  if (!services.ok) {
+    throw new Error(
+      `Erreur de requête: ${services.status} - ${services.statusText}`,
+    );
+  }
+
+  const servicesData = await services.json();
+  const servicesList = await servicesData.data.services;
+
+  const matchingService = servicesList.find(
+    (service: any) => service.name === slug,
+  );
+
+  if (matchingService) {
+    serviceId = matchingService.id;
+    // Faites quelque chose avec serviceId
+    const serviceResponseRaw = await fetch(
+      `${ameliaURL}services/${serviceId}`,
+      {
+        method: "GET",
+        headers: headers,
+      },
+    );
+
+    if (serviceResponseRaw.ok) {
+      const serviceResponse = await serviceResponseRaw.json();
+      serviceData = serviceResponse.data.service;
+      color = serviceData?.color;
+
+      const categoryFetch = await fetch(
+        `${ameliaURL}categories/${serviceData.categoryId}`,
+        {
+          method: "GET",
+          headers: headers,
+        },
+      );
+
+      if (categoryFetch.ok) {
+        const categoryResponse = await categoryFetch.json();
+        console.log(categoryResponse);
+        category = categoryResponse.data.category.name;
+      }
+    } else {
+      console.log(
+        `Erreur lors de la requête pour le service ${serviceId}: ${serviceResponseRaw.status} - ${serviceResponseRaw.statusText}`,
+      );
+    }
+  } else {
+    console.log(`Aucun service trouvé avec le slug ${slug}`);
+  }
+} catch (error) {
+  console.error("Erreur lors de la récupération des données:", error.message);
+}
+
+---
+
+<head>
+  <!-- Balises Schema.org -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "4 rue du Fourneau, Laigné en Belin, Ecommoy, Mulsanne, Téloché, Mayet, Sarthe",
+        "addressLocality": "Le Mans",
+        "postalCode": "72000, 72100, 72200,72500,72220,72300",
+        "addressCountry": "France"
+      }
+    }
+  </script>
+
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Prothésie ongulaire",
+      "description": "Description détaillée de votre service de manucure.",
+      "provider": {
+        "@type": "LocalBusiness",
+        "name": "Amandine Gorsse Prothésiste Ongulaire"
+      }
+    }
+  </script>
+
+  <Meta
+    title={`Amandine Gorsse | Prothésiste ongulaire | ${serviceData?.name}`}
+    description={`Offrez-vous une expérience de ${serviceData?.name} exceptionnelle au Mans, Sarthe. 
+Je vous propose mon expertise, des services professionnels de prothésie ongulaire, avec des produits de qualité. 
+Réservez votre séance pour des ongles magnifiquement entretenus et stylisés de ${serviceData?.name}. 
+Découvrez l'excellence en matière de ${serviceData?.name} dans la région du Mans.`}
+    image={serviceData?.pictureFullPath}
+  />
+</head>
+
+<AppLayout>
+  <div>
+    <div
+      class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:grid lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8"
+      itemscope itemtype="https://schema.org/LocalBusiness"
+    >
+    <span itemprop="name" class="sr-only">Amandine Gorsse Prothésiste Ongulaire</span>
+      <div class="lg:max-w-lg lg:self-end"
+      itemscope itemtype="https://schema.org/Service"
+      >
+        <nav aria-label="Breadcrumb">
+          <ol role="list" class="flex items-center space-x-2">
+            <li>
+              <div class="flex items-center text-sm">
+                <span
+                  class="font-medium text-muted-foreground hover:text-gray-900"
+                  >{category}</span
+                >
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                  class="ml-2 h-5 w-5 flex-shrink-0 text-gray-300"
+                >
+                  <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z"></path>
+                </svg>
+              </div>
+            </li>
+            <li>
+              <div class="flex items-center text-sm">
+                <span
+                  style={`color: ${color}; opacity: 80%`}
+                  class="font-medium hover:text-gray-900"
+                  >{serviceData?.name}</span
+                >
+              </div>
+            </li>
+          </ol>
+        </nav>
+
+        <div class="mt-4">
+          <h1
+            style={`color: ${color}`}
+            class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
+            itemprop="name"
+          >
+            {serviceData?.name}
+          </h1>
+        </div>
+
+        <section aria-labelledby="information-heading" class="mt-4">
+          <h2 id="information-heading" class="sr-only">
+            Informations de la prestation
+          </h2>
+
+          <div class="flex items-center">
+            <p class="text-lg text-muted-foreground sm:text-xl">
+              A partir de {serviceData?.price} € - Durée : {
+                durationFormatter(serviceData?.duration)
+              } min - En salon*
+            </p>
+
+            <!-- <div class="ml-4 border-l border-gray-300 pl-4">
+            <h2 class="sr-only">Reviews</h2>
+            <div class="flex items-center">
+              <div>
+                <div class="flex items-center">
+                
+                  <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                  </svg>
+                  <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                  </svg>
+                  <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                  </svg>
+                  <svg class="text-yellow-400 h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                  </svg>
+                  <svg class="text-gray-300 h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.62 3.102-1.106 4.637c-.194.813.691 1.456 1.405 1.02L10 15.591l4.069 2.485c.713.436 1.598-.207 1.404-1.02l-1.106-4.637 3.62-3.102c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <p class="sr-only">4 out of 5 stars</p>
+              </div>
+              <p class="ml-2 text-sm text-gray-500">1624 reviews</p>
+            </div>
+          </div> -->
+          </div>
+
+          <div class="mt-4 space-y-6">
+            <p class="text-base text-gray-500"
+            itemprop="description"
+            >
+              {serviceData?.description}
+            </p>
+          </div>
+          {
+            bonusSupplementaires &&
+              bonusSupplementaires.map((bonus) => (
+                <div class="mt-6 flex items-center">
+                  <svg
+                    class="h-5 w-5 flex-shrink-0 text-green-500"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <p class="ml-2 text-sm text-gray-500">{bonus.title}</p>
+                </div>
+              ))
+          }
+        </section>
+      </div>
+
+      <div class="mt-10 lg:col-start-2 lg:row-span-2 lg:mt-0 lg:self-center">
+        <div class="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg">
+          <img
+          itemprop="image"
+            src={serviceData?.pictureFullPath}
+            alt={serviceData?.name}
+            class="h-full w-full object-cover object-center"
+          />
+        </div>
+      </div>
+
+      <div
+        class="mt-10 lg:col-start-1 lg:row-start-2 lg:max-w-lg lg:self-start"
+      >
+        {
+          serviceData?.extras && (
+            <section aria-labelledby="options-heading">
+              <h2 id="options-heading" class="sr-only">
+                Options supplémentaires
+              </h2>
+              <div class="sm:flex sm:justify-between">
+                <fieldset>
+                  <legend class="block text-sm font-medium text-muted-foreground dark:text-white">
+                    Options supplémentaires :
+                  </legend>
+                  <div class="mt-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {serviceData?.extras &&
+                      serviceData?.extras.map((service) => (
+                        <div class="group relative block rounded-lg border border-gray-300 p-4 focus:outline-none">
+                          <p
+                            style={`color: ${color}`}
+                            id="size-choice-0-label"
+                            class="text-base font-medium "
+                          >
+                            {service.name}
+                          </p>
+                          <p
+                            id="size-choice-0-description"
+                            class="mt-1 text-sm text-gray-500"
+                          >
+                            {service.description} <br />
+                            <span style={`color: ${color}`}>
+                              {service.price}€
+                            </span>
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                </fieldset>
+              </div>
+              <div class="mt-4">
+                <a
+                  href="#"
+                  class="group inline-flex text-sm text-gray-500 hover:text-gray-700"
+                >
+                  <span>What size should I buy?</span>
+                  <svg
+                    class="ml-2 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.94 6.94a.75.75 0 11-1.061-1.061 3 3 0 112.871 5.026v.345a.75.75 0 01-1.5 0v-.5c0-.72.57-1.172 1.081-1.287A1.5 1.5 0 108.94 6.94zM10 15a1 1 0 100-2 1 1 0 000 2z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </a>
+              </div>
+            </section>
+          )
+        }
+
+        <div class="mt-10">
+          <OpenCalendar
+            color={serviceData.color}
+            serviceId={serviceData.id}
+            client:only
+          />
+        </div>
+        <div class="mt-6 text-center">
+          <span class="group inline-flex text-base font-medium">
+            <svg
+              class="mr-2 h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
+              ></path>
+            </svg>
+            <span class="text-gray-500 hover:text-gray-700">
+              Qualité du service garantie
+            </span>
+          </span>
+        </div>
+      </div>
+      <div>
+        <div
+        itemprop="address" itemscope itemtype="https://schema.org/PostalAddress"
+        >
+          <span class="text-xs"
+          itemprop="streetAddress"
+          > *Adresse : <span itemprop="addressLocality">Laigné en Belin,</span> <span itemprop="postalCode">72220</span>, Sarthe, <span itemprop="addressCountry">France</span></span>
+        </div>
+      </div>
+
+
+    </div>
+   
+  </div>
+</AppLayout>
