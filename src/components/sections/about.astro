@@ -7,7 +7,7 @@ const aboutData = about as AboutSection
 
 
 ---
-    <div class="mt-24 pb-12">
+    <div class="mt-24 pb-12" itemscope itemtype="https://schema.org/Person">
         <!-- Content section -->
         <div class="mt-32 overflow-hidden sm:mt-40">
             <div class="mx-auto max-w-7xl px-6 lg:flex lg:px-8">
@@ -18,15 +18,19 @@ const aboutData = about as AboutSection
                         >
                            {aboutData.titre}
                         </h2>
-                        <p class="mt-6 text-xl leading-8 text-muted-foreground">
+                        <p class="mt-6 text-xl leading-8 text-muted-foreground"
+                        itemprop="name"
+                        >
                             {aboutData.sousTitre}
                         </p>
-                        <p class="mt-6 text-base leading-7 text-muted-foreground/80">
+                        <p class="mt-6 text-base leading-7 text-muted-foreground/80"
+                        itemprop="description"
+                        >
                             {aboutData.description}
                         </p>
                         <div class="flex items-center justify-center gap-2 mt-8 px-6 py-10 bg-background">
-                            <p class="text-base leading-7 text-secondary-foreground font-medium">Certifiée par : </p>
-                            <img src="/academee.svg" alt="Logo d'academee" class="w-[150px] md:w-[220px] h-auto">
+                            <p class="text-base leading-7 text-secondary-foreground font-medium">Certifiée par : <span class="sr-only" itemprop="credentialAwarded">Academee</span></p>
+                            <img src="/academee.svg" alt="Logo d'academee" class="w-[150px] md:w-[220px] h-auto" itemprop="educationalCredentialAwarded">
                         </div>
                         
                     </div>
@@ -79,3 +83,6 @@ const aboutData = about as AboutSection
             </div>
         </div>
 </div>
+
+
+

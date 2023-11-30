@@ -1,6 +1,6 @@
 ---
 import { SEOMetadata } from 'astro-seo-metadata';
-const {title, description, image } = Astro.props;
+const {title, description, image, keywords } = Astro.props;
 ---
 <head>
     <!-- Place component inside `HEAD` tag -->
@@ -8,11 +8,12 @@ const {title, description, image } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <!-- All properties are optional -->
+    <meta name="keywords" content={keywords} />
     <SEOMetadata
-      siteName={'Le Website'}
+      siteName={'Amandine Nails'}
       title={title}
-      description={'Le insightful description'}
-      image={'http://example.com/the_image_url-preferably_absolute.jpg'}
+      description={description}
+      image={image}
       favicon={'/favicon.svg'}
       author="Amandine Gorsse Prothésiste ongulaire"
       copyright="ISC"
@@ -20,6 +21,7 @@ const {title, description, image } = Astro.props;
       canonicalUrl={Astro.url.toString()}
       type={'website'}
       astroGenerator={true}
+
     />
   
     <!-- ... -->

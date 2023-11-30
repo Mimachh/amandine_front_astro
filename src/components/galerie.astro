@@ -1,46 +1,51 @@
 ---
-import AppLayout from "@/components/layouts/AppLayout.astro";
-
 import { getAllGaleriePage } from "@/lib/api/galerie";
-
-// export async function getStaticPaths() {
-//   const galeriePage = await getAllGaleriePage();
-//   return galeriePage.edges.map(({ node }) => {
-//     return {
-//       params: { slug: node.slug },
-//     };
-//   });
-// }
-
-const { slug } = Astro.params;
+import Meta from "./Meta.astro";
 const galeriePage = await getAllGaleriePage();
 const images = galeriePage.galerie.imageDeLaGalerie;
-// console.log(images.imageDeLaGalerie)
 ---
 
+<head>
+    <Meta
+        title={`Explorez ma galerie de prothésiste ongulaire | Artisanat Exquis pour des Ongles Élégants | Amandine Nails`}
+        keywords="Prothésiste Ongulaire, Onglerie Le Mans, Manucure et Pédicure, Beauté des Ongles, Pose d'Ongles, Vernis Semi-Permanent, Esthétique Ongulaire, Soins des Ongles, Nail Art Le Mans, Expertise Ongulaire, Amandine Nails, Nail Tech Sarthe"
+        description={`Découvrez l'expertise exceptionnelle de notre prothésiste ongulaire Amandine Nails à travers notre galerie exclusive. Des créations uniques et raffinées pour sublimer vos ongles. Explorez nos services et trouvez l'inspiration pour des ongles élégants et tendance.`}
+        image={``}
+    />
+</head>
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 px-2">
     {
-        images.map((image, index) => (
-            <div class="relative group">
+        images.map((image) => (
+            <div
+                class="relative group"
+                itemscope
+                itemtype="http://schema.org/ImageObject"
+            >
                 <img
                     src={image.image?.sourceUrl}
                     alt={image.image?.altText}
                     class="w-full h-full object-cover aspect-auto"
+                    itemprop="contentUrl"
                 />
                 <div class="opacity-0 absolute inset-0 group-hover:opacity-[100%]  flex transition duration-300 ease items-center justify-center">
-                    <div class="absolute inset-0 bg-background/40 z-1"></div>
+                    <div class="absolute inset-0 bg-background/40 z-1" />
                     <div class="z-0">
-                        <h2 class="sr-only">{image.titre}</h2>
-                        <div class="sr-only">{image.description}</div>
+                        <h2 class="sr-only" itemprop="name">
+                            {image.titre}
+                        </h2>
+                        <div class="sr-only" itemprop="description">
+                            {image.description}
+                        </div>
 
                         <h3 class="text-xl">Catégorie(s): </h3>
                         {image.etiquette.map((element) => (
                             <div>
-                                <a href="" class="underline">{element.name}</a>
+                                <span itemprop="keywords" class="underline">
+                                    {element.name}
+                                </span>
                             </div>
                         ))}
                     </div>
-                 
                 </div>
             </div>
         ))

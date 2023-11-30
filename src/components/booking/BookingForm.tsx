@@ -12,7 +12,7 @@ import type { SlotsProps } from '../types/CalendarTypes.ts';
 import type { UserProps } from '../types/UserTypes.ts';
 import { durationFormatter, formatDateTimeForStore } from '@/helper/formattedDates';
 import Creneaux from './Creneaux.tsx';
-import type {BookingProps} from "../types/BookingTypes.ts"
+import type { BookingProps } from "../types/BookingTypes.ts"
 import type { ExtrasProps, StateExtraObject, ServiceProps } from '../types/ServiceTypes.ts';
 import Tabulation from './Tabulation.tsx';
 import Options from "./Options.tsx"
@@ -54,7 +54,7 @@ export default function Booking(props: BookingModalProps) {
   const [employee, setEmployee] = useState<UserProps>();
   const [occupiedSlots, setOccupiedSlots] = useState<SlotsProps[]>([]);
   const [slotSelectedOccupied, setSlotSelectedOccupied] = useState<SlotsProps>({});
-
+  // console.log({ slots })
   // LES EXTRAS
   const [extras, setExtras] = useState<ExtrasProps[]>([]);
 
@@ -82,7 +82,7 @@ export default function Booking(props: BookingModalProps) {
       const urlSuffixSlots = `slots&serviceId=${serviceId}&startDateTime=${formattedToday}&duration=3600&providerIds=1&persons=1&excludeAppointmentId=null&timeAfter&timeBefore`;
       const urlSuffixEmployee = `users/providers/${employeeID}`
       const signal = controller.signal;
- 
+
       try {
         const responseService = await axios.get(`${ameliaURL}${urlSuffixService}`, {
           headers: headers,
@@ -143,7 +143,7 @@ export default function Booking(props: BookingModalProps) {
 
 
 
- 
+
 
   const formSchema = z.object({
     nom: z.string().min(2).max(50),
@@ -167,95 +167,101 @@ export default function Booking(props: BookingModalProps) {
 
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-    console.log({stateExtra})
-      setLoading(true)
-      // Je cherche le user via son mail
-        // Je vérifie la validité des states, et je les transforme au bon format.
-        // if (isValidDaySelected(daySelected) && isValidHourSelected(hourSelected)) {
-          const formattedDateTime = formatDateTimeForStore(`${daySelected} ${hourSelected}`);
+    // console.log(values);
+    // console.log({ stateExtra })
+    setLoading(true)
+    // Je cherche le user via son mail
+    // Je vérifie la validité des states, et je les transforme au bon format.
+    // if (isValidDaySelected(daySelected) && isValidHourSelected(hourSelected)) {
+    const formattedDateTime = formatDateTimeForStore(`${daySelected} ${hourSelected}`);
 
-          try {
-            const postBookingUrl = `bookings`
-            const postBooking = await axios.post(`${ameliaURL}${postBookingUrl}`, {
-              "type": "appointment",
-              "bookings": [
-                  {
-                      "extras": transformStateToExtras(stateExtra),
-                      "customFields": {},
-                      "deposit": true,
-                      "locale": "fr_FR",
-                      "utcOffset": null,
-                      "persons": 1,
-                      "customerId": null,
-                      "customer": {
-                          "id": null,
-                          "firstName": values.prenom,
-                          "lastName": values.nom,
-                          "email": values.email,
-                          "phone": "",
-                          "countryPhoneIso": "",
-                          "externalId": null
-                      },
-                      "duration": service.duration
-                  }
-              ],
-              "payment": {
-                  "gateway": "onSite",
-                  "currency": "USD",
-                  "data": {}
-              },
-              "recaptcha": null,
-              "locale": "fr_FR",
-              "timeZone": "Europe/Paris",
-              "bookingStart": formattedDateTime,
-              "notifyParticipants": 1,
-              "locationId": 1,
-              "providerId": employeeID,
-              "serviceId": serviceId,
-              "utcOffset": null,
-              "recurring": [],
-              "package": [],
-              "couponCode": null,
-              "runInstantPostBookingActions": false
-          },
-              {
-                headers: headers,
-              }
-            );
-
-            console.log(postBooking)
-            setBookingValidated(postBooking.data.data)
-            const postBookingID = postBooking.data.data.appointment.id;
-            const postBookingPaiementID = postBooking.data.data.paymentId;
-            const postBookingCustomerID = postBooking.data.data.booking.customerId;
-            try {
-              const postBookingNotifcation = await axios.post(`${ameliaURL}bookings/success/${postBookingID}`, {
-                "type": "appointment",
-                "appointmentStatusChanged": false,
-                "recurring": [],
-                "packageId": null,
-                "customerId": postBookingCustomerID,
-                "paymentId": postBookingPaiementID,
-                "packageCustomerId": null
-              },
-              {
-                headers: headers,
-              });
-              console.log(postBookingNotifcation)
-            } catch (error) {
-              console.log(error)
-            }
-            setCurrentStep(currentStep + 1)
-            setLoading(false)
-          } catch (error) {
-            console.log(error);
+    try {
+      const postBookingUrl = `bookings`
+      const postBooking = await axios.post(`${ameliaURL}${postBookingUrl}`, {
+        "type": "appointment",
+        "bookings": [
+          {
+            "extras": transformStateToExtras(stateExtra),
+            "customFields": {
+              // "1": {
+              //   "label": "test",
+              //   "type": "text",
+              //   "value": "custom field value"
+              // }
+            },
+            "deposit": true,
+            "locale": "fr_FR",
+            "utcOffset": null,
+            "persons": 1,
+            "customerId": null,
+            "customer": {
+              "id": null,
+              "firstName": values.prenom,
+              "lastName": values.nom,
+              "email": values.email,
+              "phone": "",
+              "countryPhoneIso": "",
+              "externalId": null
+            },
+            "duration": service.duration
           }
-          // Le else de la validité des données
-        // } else {
-        //   return null;
-        // }
-    
+        ],
+        "payment": {
+          "gateway": "onSite",
+          "currency": "USD",
+          "data": {}
+        },
+        "recaptcha": null,
+        "locale": "fr_FR",
+        "timeZone": "Europe/Paris",
+        "bookingStart": formattedDateTime,
+        "notifyParticipants": 1,
+        "locationId": 1,
+        "providerId": employeeID,
+        "serviceId": serviceId,
+        "utcOffset": null,
+        "recurring": [],
+        "package": [],
+        "couponCode": null,
+        "runInstantPostBookingActions": false
+      },
+        {
+          headers: headers,
+        }
+      );
+
+      // console.log(postBooking)
+      setBookingValidated(postBooking.data.data)
+      const postBookingID = postBooking.data.data.appointment.id;
+      const postBookingPaiementID = postBooking.data.data.paymentId;
+      const postBookingCustomerID = postBooking.data.data.booking.customerId;
+      try {
+        const postBookingNotifcation = await axios.post(`${ameliaURL}bookings/success/${postBookingID}`, {
+          "type": "appointment",
+          "appointmentStatusChanged": false,
+          "recurring": [],
+          "packageId": null,
+          "customerId": postBookingCustomerID,
+          "paymentId": postBookingPaiementID,
+          "packageCustomerId": null
+        },
+          {
+            headers: headers,
+          });
+        // console.log(postBookingNotifcation)
+      } catch (error) {
+        console.log(error)
+      }
+      setCurrentStep(currentStep + 1)
+      setLoading(false)
+    } catch (error) {
+      console.log(error);
+    }
+    // Le else de la validité des données
+    // } else {
+    //   return null;
+    // }
+
   }
 
   return (
@@ -408,10 +414,10 @@ export default function Booking(props: BookingModalProps) {
 
                           {currentStep === 5 && (
                             //CONFIRMATION
-                            <Confirmation 
-                            setOpen={setOpen}
-                            color={service.color}
-                            bookingValidated={bookingValidated}
+                            <Confirmation
+                              setOpen={setOpen}
+                              color={service.color}
+                              bookingValidated={bookingValidated}
                             />
                           )}
 

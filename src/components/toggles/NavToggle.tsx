@@ -1,44 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { motion } from "framer-motion"
 import { cn } from '@/lib/utils';
 import { toggleMenuNavButton } from '@/lib/framer';
-import axios from 'axios';
-import {format, startOfToday} from "date-fns"
-import { headers } from '@/helper/AmeliaCall';
+
 
 function NavToggle(props: any) {
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  
-  
-  const today = startOfToday();
-  const formattedToday = format(today, "yyyy-MM-dd");
-
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(`https://amandine-server.kmllr.fr/wp-admin/admin-ajax.php?action=wpamelia_api&call=/api/v1/entities&types=employees`, {
-        headers: headers,
-        // withCredentials: true,
-      });
-      const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
-      const postBookingNotifcation = await axios.get(`${ameliaURL}appointments/25`,
-      {
-        headers: headers,
-      });
-
-      // Vous pouvez traiter les données de la réponse ici
-      console.log(postBookingNotifcation);
-    } catch (error) {
-      // Gérez les erreurs ici
-      console.error('Erreur lors de la récupération des services:', error);
-    }
-  };
-
-  // Appelez la fonction fetchData au chargement de la page
-  useEffect(() => {
-    fetchData();
-  }, []);
   return (
     <>
       <div className="text-white w-fit h-16 px-4 relative z-40 ">

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import type { SlotsProps } from '../types/CalendarTypes';
 import Loader from '../Loader';
 import TitleStep from './TitleStep';
-import { addHours, format, isAfter, isSameDay, parse, startOfToday } from 'date-fns';
+import { addHours, isAfter, isSameDay, parse, startOfToday } from 'date-fns';
+import { addDuration, formatHour } from '@/helper/creneauFunctions';
 
 interface CreneauxProps {
   selectedDaySlots: SlotsProps;
@@ -31,6 +32,8 @@ export default function Creneaux(props: CreneauxProps) {
     return <div><Loader /></div>;
   }
   let availableSlotsCount = 0;
+
+  // console.log(selectedDaySlots)
   return (
     <div>
       <TitleStep
@@ -80,9 +83,7 @@ export default function Creneaux(props: CreneauxProps) {
       )}
     </div>
   );
-
-
-  function getList(index: number, startDateTime: string) {
+function getList(index: number, startDateTime: string) {
     return (
       <li
         style={{
@@ -112,31 +113,5 @@ export default function Creneaux(props: CreneauxProps) {
   }
 }
 
-// Fonction pour ajouter la durée à un horaire
-function addDuration(startTime: string, durationInSeconds: number): string {
-  const [startHour, startMinute] = startTime.split(':').map(Number);
 
-  // Convertir le temps de début en minutes
-  const totalStartMinutes = startHour * 60 + startMinute;
-
-  // Calculer le temps de fin en minutes
-  const totalEndMinutes = totalStartMinutes + durationInSeconds / 60;
-
-  // Extraire l'heure et les minutes de totalEndMinutes
-  const endHour = Math.floor(totalEndMinutes / 60);
-  const endMinute = Math.round(totalEndMinutes % 60);
-
-  // Formater l'heure de fin
-  const formattedEndHour = String(endHour).padStart(2, '0');
-  const formattedEndMinute = String(endMinute).padStart(2, '0');
-
-  return `${formattedEndHour}:${formattedEndMinute}`;
-}
-
-// Fonction pour formater l'heure au format "H:mm"
-function formatHour(hour: string): string {
-  const [hourPart, minutePart] = hour.split(':');
-  const formattedHour = parseInt(hourPart, 10).toString();
-  return `${formattedHour}h${minutePart}`;
-}
 

@@ -2,6 +2,8 @@
 import type { GarantiePrestationSection } from "@/lib/api/mainPage";
 const { garantie } = Astro.props;
 const garantieData = garantie as GarantiePrestationSection
+
+
 ---
 
 
@@ -11,20 +13,20 @@ const garantieData = garantie as GarantiePrestationSection
         {Object.keys(garantieData).map((groupeKey) => {
           const groupe = garantieData[groupeKey];
           return (
-            <div>
+            <div itemscope itemtype="https://schema.org/Service">
               <div class="flow-root">
                 <img class="dark:hidden h-16 w-16" src={groupe.logoModeClair.sourceUrl} alt={groupe.logoModeClair.altText} />
                 <img class="hidden dark:flex h-16 w-16" src={groupe.logoModeSombre.sourceUrl} alt={groupe.logoModeSombre.altText} />
               </div>
-              <h3 class="mt-6 text-lg md:text-xl font-medium text-lightgrey">{groupe.titre}</h3>
-              <p class="mt-2 text-sm text-muted-foreground">{groupe.description}</p>
+              <h3 class="mt-6 text-lg md:text-xl font-medium text-lightgrey" itemprop="name">{groupe.titre}</h3>
+              <p class="mt-2 text-sm text-muted-foreground" itemprop="description">{groupe.description}</p>
             </div>
           );
         })}
       </div>
     </div>
     <div class="pb-6 lg:max-w-7xl mx-auto px-4">
-      <small class="mt-4">* <a href="" class="text-blue-300 underline italic">Voir conditions</a></small>
+      <small class="mt-4" itemprop="termsOfService">* <a href="" class="text-blue-300 underline italic">Voir conditions</a></small>
     </div>
 
   </div>

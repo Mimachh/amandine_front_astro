@@ -16,7 +16,7 @@ export async function getStaticPaths() {
 
 import { getMainPage } from "@/lib/api/mainPage";
 import type { PageData } from "@/lib/api/mainPage";
-import Services from '@/components/sections/main/Services';
+
 
 
 
@@ -30,12 +30,12 @@ const isPrestationPage = slug === 'mes-prestations'
 const isAboutPage = slug === 'a-propos'
 ---
 
+
+
 <AppLayout>
     {isGalleryPage ? (
       <div>
         <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">{page.title}</div>
-        {/* Contenu spécifique pour la page de la galerie */}
-        {/* ... */}
         <Galerie />
       </div>
     ) : isPrestationPage ? (

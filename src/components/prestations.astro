@@ -1,10 +1,18 @@
 ---
 
+import Meta from "./Meta.astro";
 import Services from "./sections/main/Services.tsx";
 
 // Je remets le service.tsx ici. Et il redirigera vers slug.astro
 ---
-
+<head>
+    <Meta
+    title={`Services de Nail Art Personnalisés | Expertise Exceptionnelle pour des Ongles Sublimes - Réservation en Ligne - Le Mans - Sarthe| Amandine Nails`}
+    keywords="Prothésiste Ongulaire, Onglerie Le Mans, Manucure et Pédicure, Beauté des Ongles, Pose d'Ongles, Vernis Semi-Permanent, Esthétique Ongulaire, Soins des Ongles, Nail Art Le Mans, Expertise Ongulaire, Amandine Nails, Nail Tech Sarthe"
+    description={`Découvrez mes services de prothèse ongulaire et nail art haut de gamme conçus pour vous offrir des ongles exceptionnels. De la pose artistique aux soins spécialisés, Amandine Nails vous propose une gamme complète de services personnalisés. Explorez mon expertise pour des ongles sublimes qui captivent`}
+    image={``}
+  />
+</head>
 <div class="w-full">
     <Services client:only />
 </div>

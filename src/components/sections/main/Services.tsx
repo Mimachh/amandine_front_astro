@@ -122,6 +122,33 @@ export default function Services() {
                       </a>
                     </li>
                   </ul>
+                  <script type="application/ld+json">
+                  {`
+                    {
+                      "@context": "https://schema.org",
+                      "@type": "Service",
+                      "name": "${service.name}",
+                      "description": "${service.description}",
+                      "provider": {
+                        "@type": "LocalBusiness",
+                        "name": "Amandine Nails"
+                        "address": {
+                          "@type": "PostalAddress",
+                          "streetAddress": "4 rue du Fourneau",
+                          "addressLocality": "Laigné en Belin",
+                          "postalCode": "72220",
+                          "addressCountry": "Sarthe Le Mans France"
+                        }
+                      },
+                      "offers": {
+                        "@type": "Offer",
+                        "price": "${service.price}",
+                        "priceCurrency": "EUR",
+                        "availability": "https://schema.org/InStock"
+                      }
+                    }
+                  `}
+                </script>
                 </li>
               ))}
 

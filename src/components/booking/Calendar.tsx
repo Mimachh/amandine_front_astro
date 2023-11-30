@@ -32,7 +32,7 @@ export default function Calendar(props: CalendarProps) {
         // start: firstDayCurrentMonth,
         end: endOfWeek(endOfMonth(firstDayCurrentMonth), { locale: fr })
     })
-    console.log(employee.weekDayList)
+    // console.log(employee.weekDayList)
 
     // Je m'occupe des slots
     // console.log("slots", slots)

@@ -6,6 +6,7 @@ import { getMainPage } from "@/lib/api/mainPage";
 import type { PageData } from "@/lib/api/mainPage";
 import Services from "@/components/sections/main/Services";
 import Incentives from "@/components/sections/main/incentives.astro"
+import Meta from "@/components/Meta.astro";
 // let res = await fetch(`https://amandine-server.kmllr.fr/wp-json/wp/v2/pages?slug=accueil`)
 
 
@@ -15,7 +16,41 @@ const about = dataPage.page.aboutSection
 const garantie = dataPage.page.garantiePrestation
 ---
 
-
+<head>
+	<script type="application/ld+json">
+	  {
+		"@context": "https://schema.org",
+		"@type": "LocalBusiness",
+		"address": {
+		  "@type": "PostalAddress",
+		  "streetAddress": "4 rue du Fourneau, Laigné en Belin, Ecommoy, Mulsanne, Téloché, Mayet, Sarthe",
+		  "addressLocality": "Le Mans",
+		  "postalCode": "72000, 72100, 72200,72500,72220,72300",
+		  "addressCountry": "France"
+		}
+	  }
+	</script>
+  
+	<script type="application/ld+json">
+	  {
+		"@context": "https://schema.org",
+		"@type": "Service",
+		"name": "Prothésie ongulaire",
+		"description": "Description détaillée de votre service de manucure.",
+		"provider": {
+		  "@type": "LocalBusiness",
+		  "name": "Amandine Gorsse Prothésiste Ongulaire"
+		}
+	  }
+	</script>
+  
+	<Meta
+	  title={`Prothésiste Ongulaire Professionnelle - Réservation en Ligne - Le Mans - Sarthe | Amandine Nails`}
+	  keywords="Prothésiste Ongulaire, Onglerie Le Mans, Manucure et Pédicure, Beauté des Ongles, Pose d'Ongles, Vernis Semi-Permanent, Esthétique Ongulaire, Soins des Ongles, Nail Art Le Mans, Expertise Ongulaire, Amandine Nails, Nail Tech Sarthe"
+	  description={`Découvrez l'expertise exceptionnelle de notre prothésiste ongulaire professionnelle. Réservez en ligne dès maintenant pour des services personnalisés. Profitez d'une beauté soignée et durable avec Amandine Nails.`}
+	  image={``}
+	/>
+  </head>
 <AppLayout>
 	<Hero 
 	hero={hero}

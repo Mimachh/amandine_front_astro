@@ -1,5 +1,4 @@
 ---
-import { SEOMetadata } from "astro-seo-metadata";
 import AppLayout from "../../components/layouts/AppLayout.astro";
 import { headers } from "../../helper/AmeliaCall";
 import { durationFormatter } from "../../helper/formattedDates";
@@ -89,12 +88,11 @@ export async function getStaticPaths() {
   // Récupérez la liste des paramètres nécessaires
   // Vous devrez peut-être adapter cela en fonction de la structure exacte des données
   // Utilisez await ici
-  const paths = services.map((service) => ({
+  const paths = services.map((service: any) => ({
     params: { slug: service.name },
   }));
-  console.log(paths)
+  // console.log(paths);
   return paths;
-  
 }
 let serviceData: ServiceProps | null = null;
 
@@ -162,18 +160,18 @@ async function getAmeliaServiceBySlug(slug: string) {
   return serviceDataFunction;
 }
 
-const service = await getAmeliaServiceBySlug(slug).then((res) => {
+const service = await getAmeliaServiceBySlug(slug)
+  .then((res) => {
     // console.log({ res });
     serviceData = res;
   })
   .catch((error) => {
     console.error("Une erreur s'est produite :", error);
   });
-console.log({serviceData})
+// console.log({ serviceData });
 ---
 
 <head>
-  <!-- Balises Schema.org -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -204,9 +202,9 @@ console.log({serviceData})
   <Meta
     title={`Amandine Gorsse | Prothésiste ongulaire | ${serviceData?.name}`}
     description={`Offrez-vous une expérience de ${serviceData?.name} exceptionnelle au Mans, Sarthe. 
-Je vous propose mon expertise, des services professionnels de prothésie ongulaire, avec des produits de qualité. 
-Réservez votre séance pour des ongles magnifiquement entretenus et stylisés de ${serviceData?.name}. 
-Découvrez l'excellence en matière de ${serviceData?.name} dans la région du Mans.`}
+    Je vous propose mon expertise, des services professionnels de prothésie ongulaire, avec des produits de qualité. 
+    Réservez votre séance pour des ongles magnifiquement entretenus et stylisés de ${serviceData?.name}. 
+    Découvrez l'excellence en matière de ${serviceData?.name} dans la région du Mans.`}
     image={serviceData?.pictureFullPath}
   />
 </head>

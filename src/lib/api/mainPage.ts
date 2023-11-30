@@ -151,7 +151,7 @@ export async function getMainPage(): Promise<PageData | undefined> {
         }
       }
       `);
-      console.log('Main page:', data); // Ajoutez cette ligne
+      // console.log('Main page:', data);
   
       return data;
     } catch (error) {

@@ -32,7 +32,7 @@ export default function Confirmation(props: ConfirmationProps) {
           headers: headers,
         });
 
-        console.log(extrasResponse.data.data)
+        // console.log(extrasResponse.data.data)
         const allExtras = extrasResponse.data.data.extras; // Supposons que allExtras est un tableau contenant tous les extras de la base de données
 
         // Filtrer les détails des extras réservés en fonction de leurs IDs
