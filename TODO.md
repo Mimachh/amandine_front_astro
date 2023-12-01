@@ -11,9 +11,7 @@ Déplacement ou à domicile. Avec supplément pour le déplacement. Pour l'insta
 
 SCHEMA :
 
-
-
-- Vérifier les console log
+- Logo
 
 - Mise en ligne
 
@@ -22,3 +20,5 @@ SCHEMA :
 - Google Analytics
 
 - Indexation
+
+- Ajouter animations
