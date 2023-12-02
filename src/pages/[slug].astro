@@ -15,6 +15,7 @@ export async function getStaticPaths() {
 
 import { getMainPage } from "@/lib/api/mainPage";
 import type { PageData } from "@/lib/api/mainPage";
+import Contact from "@/components/contact.astro";
 
 const dataPage = (await getMainPage()) as PageData;
 const about = dataPage.page.aboutSection;
@@ -23,6 +24,7 @@ const { slug } = Astro.params;
 const page = await getPageBySlug(slug);
 const isGalleryPage = slug === "galerie"; // Ajoutez cette condition
 const isPrestationPage = slug === "mes-prestations";
+const isContactPage = slug === "contact";
 const isAboutPage = slug === "a-propos";
 ---
 
@@ -42,12 +44,14 @@ const isAboutPage = slug === "a-propos";
         </article>
       ) : isAboutPage ? (
         <About about={about} />
-      ) : (
+      ) : isContactPage ? (
+        <Contact />
+      ): (
         <>
           <div class="mb-[35px] mt-8 text-xl md:text-3xl font-semibold md:leading-3  text-center">
             {page.title}
           </div>
-          <article class="prose lg:prose-xl w-full mx-auto pt-8" set:html={page.content}>
+          <article class="prose lg:prose-xl w-full mx-auto pt-8 !text-accent-foreground" set:html={page.content}>
          
           </article>
         </>
