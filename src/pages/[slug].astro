@@ -1,9 +1,9 @@
 ---
-import Galerie from '@/components/galerie.astro';
-import AppLayout from '@/components/layouts/AppLayout.astro';
-import About from '@/components/sections/about.astro';
-import { getAllPagesWithSlugs, getPageBySlug } from '@/lib/api/api';
-import Prestations from "@/components/prestations.astro"
+import Galerie from "@/components/galerie.astro";
+import AppLayout from "@/components/layouts/AppLayout.astro";
+import About from "@/components/sections/about.astro";
+import { getAllPagesWithSlugs, getPageBySlug } from "@/lib/api/api";
+import Prestations from "@/components/prestations.astro";
 export async function getStaticPaths() {
   const pagesWithSlugs = await getAllPagesWithSlugs();
   return pagesWithSlugs.edges.map(({ node }) => {
@@ -13,44 +13,45 @@ export async function getStaticPaths() {
   });
 }
 
-
 import { getMainPage } from "@/lib/api/mainPage";
 import type { PageData } from "@/lib/api/mainPage";
 
-
-
-
 const dataPage = (await getMainPage()) as PageData;
-const about = dataPage.page.aboutSection
+const about = dataPage.page.aboutSection;
 
 const { slug } = Astro.params;
 const page = await getPageBySlug(slug);
-const isGalleryPage = slug === 'galerie'; // Ajoutez cette condition
-const isPrestationPage = slug === 'mes-prestations'
-const isAboutPage = slug === 'a-propos'
+const isGalleryPage = slug === "galerie"; // Ajoutez cette condition
+const isPrestationPage = slug === "mes-prestations";
+const isAboutPage = slug === "a-propos";
 ---
-
-
 
 <AppLayout>
   <div class="max-w-7xl mx-auto px-4">
-    {isGalleryPage ? (
-      <div>
-        <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">{page.title}</div>
-        <Galerie />
-      </div>
-    ) : isPrestationPage ? (
-      <article class="w-full">
-        <Prestations />
-      </article>
-    ) : isAboutPage ? (
-      <About about={about}/>
-    ) 
-    : (
-    <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">{page.title}</div>
-    <article class="prose lg:prose-xl w-full mx-auto">
-        {page.content} content
-      </article>
-    )}
-      </div>
+    {
+      isGalleryPage ? (
+        <div>
+          <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">
+            {page.title}
+          </div>
+          <Galerie />
+        </div>
+      ) : isPrestationPage ? (
+        <article class="w-full">
+          <Prestations />
+        </article>
+      ) : isAboutPage ? (
+        <About about={about} />
+      ) : (
+        <>
+          <div class="mb-[35px] mt-8 text-3xl font-semibold leading-3 ml-4 text-center">
+            {page.title}
+          </div>
+          <article class="prose lg:prose-xl w-full mx-auto pt-8" set:html={page.content}>
+         
+          </article>
+        </>
+      )
+    }
+  </div>
 </AppLayout>
