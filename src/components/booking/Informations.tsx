@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import TitleStep from './TitleStep';
 import { Textarea } from '../ui/textarea'
+import { Checkbox } from '../ui/checkbox';
 
 
 interface InformationsProps {
@@ -104,6 +105,29 @@ export default function Informations(props: InformationsProps) {
                                 {...field}
                             />
                         </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={control}
+                name="terms"
+                render={({ field }) => (
+                    <FormItem className="">
+                        <div className='flex flex-row items-start space-x-3 space-y-0'>
+                            <FormControl>
+                                <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className='rounded-[5px]'
+                                />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                                <FormLabel>
+                                    J'accepte les <a className='text-blue-400 underline' href="/conditions-dutilisation">conditions d'utilisation</a>.
+                                </FormLabel>
+                            </div>
+                        </div>
                         <FormMessage />
                     </FormItem>
                 )}

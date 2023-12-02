@@ -1,4 +1,6 @@
-const API_URL = "https://amandine-server.kmllr.fr/graphql";
+// const API_URL = "https://amandine-server.kmllr.fr/graphql";
+const API_URL = "https://www.reservation-back.amandine-nails.fr/graphql";
+
 
 
 export async function fetchAPI(query, { variables } = {}) {

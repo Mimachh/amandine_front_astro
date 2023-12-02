@@ -33,6 +33,7 @@ const isAboutPage = slug === 'a-propos'
 
 
 <AppLayout>
+  <div class="max-w-7xl mx-auto px-4">
     {isGalleryPage ? (
       <div>
         <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">{page.title}</div>
@@ -51,4 +52,5 @@ const isAboutPage = slug === 'a-propos'
         {page.content}
       </article>
     )}
+      </div>
 </AppLayout>

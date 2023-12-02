@@ -150,7 +150,8 @@ export default function Booking(props: BookingModalProps) {
     prenom: z.string().min(2).max(50),
     email: z.string().min(5).email(),
     telephone: z.string().min(10).max(10).nullable(),
-    notes: z.string().max(60).nullable()
+    notes: z.string().max(60).nullable(),
+    terms: z.boolean().default(false).refine(data => data, { message: 'Veuillez accepter les termes et conditions' }),
   });
 
 
@@ -162,6 +163,7 @@ export default function Booking(props: BookingModalProps) {
       email: "",
       telephone: "",
       notes: "",
+      terms: false,
     },
   });
 
