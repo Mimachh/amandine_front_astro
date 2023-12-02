@@ -13,8 +13,6 @@ SCHEMA :
 
 - Logo
 
-- Mise en ligne
-
 - Image dans les metas
 
 - Google Analytics
@@ -24,3 +22,5 @@ SCHEMA :
 - Ajouter animations
 
 - Image au bon format
+
+- Pages à remplir

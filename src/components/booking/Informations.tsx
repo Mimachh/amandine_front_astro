@@ -124,7 +124,7 @@ export default function Informations(props: InformationsProps) {
                             </FormControl>
                             <div className="space-y-1 leading-none">
                                 <FormLabel>
-                                    J'accepte les <a className='text-blue-400 underline' href="/conditions-dutilisation">conditions d'utilisation</a>.
+                                    J'accepte les <a className='text-blue-400 underline' href="/conditions">conditions d'utilisation</a>.
                                 </FormLabel>
                             </div>
                         </div>
