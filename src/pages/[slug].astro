@@ -44,7 +44,7 @@ const isAboutPage = slug === "a-propos";
         <About about={about} />
       ) : (
         <>
-          <div class="mb-[35px] mt-8 text-3xl font-semibold leading-3 ml-4 text-center">
+          <div class="mb-[35px] mt-8 text-xl md:text-3xl font-semibold md:leading-3  text-center">
             {page.title}
           </div>
           <article class="prose lg:prose-xl w-full mx-auto pt-8" set:html={page.content}>
