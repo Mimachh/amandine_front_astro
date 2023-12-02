@@ -7,11 +7,13 @@ const { hero } = Astro.props;
 const mainPage = hero as MainPage;
 ---
 
-<div class="relative isolate overflow-hidden bg-bgPinkImg min-h-[80vh]"
-itemscope itemtype="http://schema.org/Organization"
+<div
+  class="relative isolate overflow-hidden bg-bgPinkImg min-h-[80vh]"
+  itemscope
+  itemtype="http://schema.org/Organization"
 >
-<meta itemprop="name" content="Amandine Nails" />
-<meta itemprop="url" content="https://amandine-nails.fr" />
+  <meta itemprop="name" content="Amandine Nails" />
+  <meta itemprop="url" content="https://amandine-nails.fr" />
   <!-- <svg class="absolute inset-0 -z-10 h-full w-full stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_right,white,transparent)]" aria-hidden="true">
       <defs>
         <pattern id="0787a7c5-978c-4f66-83c7-11c213f99cb7" width="200" height="200" x="50%" y="-1" patternUnits="userSpaceOnUse">
@@ -25,34 +27,39 @@ itemscope itemtype="http://schema.org/Organization"
   >
     <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
       <div class="mt-24 sm:mt-32 lg:mt-16">
-        <a href="/galerie" class="inline-flex space-x-6">
-          <span
-            class="rounded-full bg-primary/30
+        <span class="inline-flex space-x-6">
+          <a href="/galerie" class="inline-flex space-x-6">
+            <span
+              class="rounded-full bg-primary/30
             px-3 py-1 text-sm font-[500] leading-6
             text-background-foreground/60 ring-1 ring-inset ring-indigo-600/10"
-            >Galerie</span
-          >
-          <span
-            class="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-accent-foreground"
-          >
-            <span>Boutique</span>
-            <svg
-              class="h-5 w-5 text-accent-foreground"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
+              >Galerie</span
             >
-              <path
-                fill-rule="evenodd"
-                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                clip-rule="evenodd"></path>
-            </svg>
-          </span>
-        </a>
+          </a>
+          <a href="https://www.boutique.amandine-nails.fr/" target="_blank">
+            <span
+              class="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-accent-foreground"
+            >
+              <span>Boutique</span>
+              <svg
+                class="h-5 w-5 text-accent-foreground"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                  clip-rule="evenodd"></path>
+              </svg>
+            </span>
+          </a>
+        </span>
       </div>
       <h1
         class="mt-10 text-4xl font-bold tracking-tight text-primary sm:text-6xl"
-        itemscope itemprop="name"
+        itemscope
+        itemprop="name"
       >
         {import.meta.env.PUBLIC_SITE_NAME}
       </h1>
@@ -67,8 +74,8 @@ itemscope itemtype="http://schema.org/Organization"
           text-white text-sm font-semibold shadow-sm flex items-center gap-3
           hover:bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
-          <CalendarDays className="w-5 h-5"/>
-          Réserver
+          <CalendarDays className="w-5 h-5" />
+           Réserver
         </a>
         <!-- <a href="#" class="text-sm font-semibold leading-6 text-primary">Learn more <span aria-hidden="true">→</span></a> -->
       </div>

@@ -22,3 +22,5 @@ SCHEMA :
 - Indexation
 
 - Ajouter animations
+
+- Image au bon format
