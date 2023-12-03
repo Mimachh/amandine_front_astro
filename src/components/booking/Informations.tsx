@@ -114,7 +114,7 @@ export default function Informations(props: InformationsProps) {
                 name="terms"
                 render={({ field }) => (
                     <FormItem className="">
-                        <div className='flex flex-row items-start space-x-3 space-y-0'>
+                        <div className='flex flex-row items-start space-x-3 space-y-0 '>
                             <FormControl>
                                 <Checkbox
                                     checked={field.value}
