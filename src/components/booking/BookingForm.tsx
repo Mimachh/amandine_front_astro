@@ -64,8 +64,8 @@ export default function Booking(props: BookingModalProps) {
 
   const ameliaURL = import.meta.env.PUBLIC_AMELIA_URL;
   const employeeID = import.meta.env.PUBLIC_EMPLOYEE_ID;
-  const nombreParResa = import.meta.env.PUBLIC_NOMBRE_PERSON_BOOKING;
-  const defaultStatusResa = import.meta.env.PUBLIC_DEFAULT_BOOKING_STATUS
+  // const nombreParResa = import.meta.env.PUBLIC_NOMBRE_PERSON_BOOKING;
+  // const defaultStatusResa = import.meta.env.PUBLIC_DEFAULT_BOOKING_STATUS
   const [bookingValidated, setBookingValidated] = useState<BookingProps>()
 
 
