@@ -131,7 +131,7 @@ export default function Services() {
                       "description": "${service.description}",
                       "provider": {
                         "@type": "LocalBusiness",
-                        "name": "Amandine Nails"
+                        "name": "Amandine Nails",
                         "address": {
                           "@type": "PostalAddress",
                           "streetAddress": "4 rue du Fourneau",

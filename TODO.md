@@ -17,10 +17,9 @@ SCHEMA :
 
 - Google Analytics
 
-- Indexation
-
 - Ajouter animations
 
 - Image au bon format
 
 - Pages à remplir
+A propos
