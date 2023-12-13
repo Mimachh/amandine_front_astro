@@ -13,7 +13,13 @@ interface utcTimeProps {
 start: string;
 end: string;
 }
+
+interface BookingAppointmentHours {
+    bookingEnd : string;
+    bookingStart: string;
+}
 export interface BookingProps {
     booking: Booking;
+    appointment: BookingAppointmentHours;
     utcTime: utcTimeProps[]
 }

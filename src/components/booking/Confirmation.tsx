@@ -73,7 +73,7 @@ export default function Confirmation(props: ConfirmationProps) {
           </div>
 
           <p>Merci {bookingValidated.booking.customer.firstName} de votre réservation! <br /></p>
-          <p>Je vous attends à mon salon le {format(new Date(bookingValidated.utcTime[0].start), 'dd/MM/yyyy à hh:mm')}
+          <p>Je vous attends à mon salon le {format(new Date(bookingValidated.appointment.bookingStart), 'dd/MM/yyyy à hh:mm')}
           </p>
           <p className='font-semibold mt-6 mb-2'>Informations complémentaires : </p>
           <ul className='space-y-2'>
