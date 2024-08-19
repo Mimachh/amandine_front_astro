@@ -1,30 +1,30 @@
 ---
 const testimonials = [
   {
-    body: 'Laborum quis quam. Dolorum et ut quod quia. Voluptas numquam delectus nihil. Aut enim doloremque et ipsam.',
+    body: 'Une bonne prestation, Amandine est très professionnelle et à l’écoute. Je recommande vivement !',
     author: {
-      name: 'Leslie Alexander',
+      name: 'Marion V.',
       handle: 'lesliealexander',
       imageUrl:
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
     },
   },
   {
-    body: 'Laborum quis quam. Dolorum et ut quod quia. Voluptas numquam delectus nihil. Aut enim doloremque et ipsam.',
+    body: "J'ai voulu testé une simple pose de vernis n'étant jamais venu avant. Je suis très satisfaite, aussi bien par la prestation que par l'accueil. Je reviendrai pour une pose de capsules américaines.",
     author: {
-      name: 'Leslie Alexander',
+      name: 'Sarah L.',
       handle: 'lesliealexander',
       imageUrl:
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        'https://images.unsplash.com/photo-1636406269177-4827c00bb263?w=256&h=256&q=80&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHZpc2FnZSUyMGZlbW1lfGVufDB8fDB8fHwy',
     },
   },
   {
-    body: 'Laborum quis quam. Dolorum et ut quod quia. Voluptas numquam delectus nihil. Aut enim doloremque et ipsam.',
+    body: 'Prestation de qualité, je suis toujours méfiante en dehors des instituts "classiques" mais je suis ravie de la prestation.',
     author: {
-      name: 'Leslie Alexander',
+      name: 'Audrey H.',
       handle: 'lesliealexander',
       imageUrl:
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        'https://images.unsplash.com/photo-1700738732802-c00e742434d0?w=256&h=256&q=80&auto=format&fit=crop&q=60',
     },
   },
 
@@ -42,15 +42,15 @@ const testimonials = [
         <div class="-mt-8 sm:-mx-4 sm:text-[0] grid md:grid-cols-3">
          
           {testimonials.map((testimonial) => (
-              <div class="pt-8 sm:inline-block sm:w-full sm:px-4">
-                <figure class="rounded-2xl bg-gray-50 p-8 text-sm leading-6">
-                  <blockquote class="text-gray-900">
+              <div class="pt-8 sm:inline-block sm:w-full sm:px-4 group cursor-pointer">
+                <figure class="rounded-2xl bg-gray-50 group-hover:bg-primary transition-all p-8 text-sm leading-6">
+                  <blockquote class="text-gray-900 group-hover:text-gray-50">
                     <p>{testimonial.body}</p>
                   </blockquote>
                   <figcaption class="mt-6 flex items-center gap-x-4">
                     <img class="h-10 w-10 rounded-full bg-gray-50" src={testimonial.author.imageUrl} alt="">
                     <div>
-                      <div class="font-semibold text-primary/90 font-gabriela">{testimonial.author.name}</div>
+                      <div class="font-semibold group-hover:text-gray-100 text-primary/90 font-gabriela">{testimonial.author.name}</div>
                       {/* <div class="text-gray-600">@lesliealexander</div> */}
                     </div>
                   </figcaption>
