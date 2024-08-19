@@ -10,7 +10,10 @@ const year = new Date().getFullYear();
 <footer class="bg-white">
     <div class="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
       <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
+        <div class="pb-6">
         <a class={cn("text-sm leading-6 hover:text-primary", !slug ? "text-primary" : "text-gray-600 hover:text-primary")} href="/">Accueil</a>
+
+        </div>
         {menuItems.edges.map((item) => (
                 <div class="pb-6">
           <a class={cn("text-sm leading-6 hover:text-primary", slug === item.node.connectedNode.node.slug ? "text-primary" : "text-gray-600 hover:text-primary")} href={item.node.path}>{item.node.label}</a>

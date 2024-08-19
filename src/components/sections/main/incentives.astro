@@ -8,11 +8,11 @@ const garantieData = garantie as GarantiePrestationSection
   <div class="">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-3xl my-12 lg:max-w-4xl">
-        <dl class="flex items-center flex-wrap">
+        <dl class="grid grid-cols-2 md:grid-cols-4 gap-3">
           {Object.keys(garantieData).map((groupeKey) => {
             const groupe = garantieData[groupeKey];
             return (
-            <div class="relative pl-16" itemscope itemtype="https://schema.org/Service">
+            <div class="relative md:pl-16" itemscope itemtype="https://schema.org/Service">
               <dt class=" flex flex-col items-center gap-2 text-base font-semibold leading-7 text-gray-900">
                 <div class="flex h-8 w-8 items-center justify-center rounded-lg ">
                   <div class="flow-root">
