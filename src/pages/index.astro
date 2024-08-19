@@ -7,8 +7,9 @@ import type { PageData } from "@/lib/api/mainPage";
 import Services from "@/components/sections/main/Services";
 import Incentives from "@/components/sections/main/incentives.astro"
 import Meta from "@/components/Meta.astro";
+import Testimonials from "@/components/sections/main/testimonials.astro";
 // let res = await fetch(`https://amandine-server.kmllr.fr/wp-json/wp/v2/pages?slug=accueil`)
-
+import ScrollLogo from "@/components/sections/main/scroll-logo"
 
 const dataPage = (await getMainPage()) as PageData;
 const hero = dataPage.page.mainPage;
@@ -57,5 +58,7 @@ const garantie = dataPage.page.garantiePrestation
 	/>
 	<Incentives garantie={garantie}/>
 	<Services client:only/>
-	<About about={about}/>
+	<ScrollLogo />
+	<Testimonials />
+	
 </AppLayout>

@@ -33,7 +33,7 @@ const isAboutPage = slug === "a-propos";
     {
       isGalleryPage ? (
         <div>
-          <div class="mb-[35px] mt-8 text-4xl font-semibold leading-3 ml-4">
+          <div class="mb-[35px] pt-32 text-4xl font-semibold leading-3 ml-4">
             {page.title}
           </div>
           <Galerie />
@@ -48,7 +48,7 @@ const isAboutPage = slug === "a-propos";
         <Contact />
       ): (
         <>
-          <div class="mb-[35px] mt-8 text-xl md:text-3xl font-semibold md:leading-3  text-center">
+          <div class="mb-[35px] pt-8 text-xl md:text-3xl font-semibold md:leading-3  text-center">
             {page.title}
           </div>
           <article class="prose lg:prose-xl w-full mx-auto pt-8 !text-accent-foreground" set:html={page.content}>

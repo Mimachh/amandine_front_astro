@@ -5,28 +5,32 @@ const garantieData = garantie as GarantiePrestationSection
 
 
 ---
-
-
-<div class="bg-muted-light my-12">
-    <div class="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:max-w-7xl lg:px-8">
-      <div class="grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-8">
-        {Object.keys(garantieData).map((groupeKey) => {
-          const groupe = garantieData[groupeKey];
-          return (
-            <div itemscope itemtype="https://schema.org/Service">
-              <div class="flow-root">
-                <img class="dark:hidden h-16 w-16" src={groupe.logoModeClair.sourceUrl} alt={groupe.logoModeClair.altText} />
-                <img class="hidden dark:flex h-16 w-16" src={groupe.logoModeSombre.sourceUrl} alt={groupe.logoModeSombre.altText} />
-              </div>
-              <h3 class="mt-6 text-lg md:text-xl font-medium text-lightgrey" itemprop="name">{groupe.titre}</h3>
-              <p class="mt-2 text-sm text-muted-foreground" itemprop="description">{groupe.description}</p>
+  <div class="">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+      <div class="mx-auto max-w-3xl my-12 lg:max-w-4xl">
+        <dl class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {Object.keys(garantieData).map((groupeKey) => {
+            const groupe = garantieData[groupeKey];
+            return (
+            <div class="relative md:pl-16" itemscope itemtype="https://schema.org/Service">
+              <dt class=" flex flex-col items-center gap-2 text-base font-semibold leading-7 text-gray-900">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg ">
+                  <div class="flow-root">
+                    <img class="dark:hidden h-16 w-16" src={groupe.logoModeClair.sourceUrl} alt={groupe.logoModeClair.altText} />
+                    <img class="hidden dark:flex h-16 w-16" src={groupe.logoModeSombre.sourceUrl} alt={groupe.logoModeSombre.altText} />
+                  </div>
+                </div>
+              <h3 itemprop="name" class="font-gabriela text-sm text-primary">{groupe.titre}</h3>
+              </dt>
+              {/* <dd class="mt-2 text-base leading-7 text-gray-600" itemprop="description">{groupe.description}</dd> */}
             </div>
-          );
-        })}
+            );
+          })}
+          
+        </dl>
       </div>
     </div>
-    <div class="pb-6 lg:max-w-7xl mx-auto px-4">
-      <small class="mt-4" itemprop="termsOfService">* <a href="" class="text-blue-300 underline italic">Voir conditions</a></small>
-    </div>
-
   </div>
+  
+
+

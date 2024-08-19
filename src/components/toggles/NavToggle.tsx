@@ -8,7 +8,7 @@ function NavToggle(props: any) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <div className="text-white w-fit h-16 px-4 relative z-40 ">
+      <div className="text-white w-fit h-16 px-4 relative z-40">
         <div className="h-full flex items-center w-fit">
           <div className="rounded-md border-[0.5px] border-accent-foreground p-[1px] relative z-50">
             <motion.div
@@ -35,11 +35,11 @@ function NavToggle(props: any) {
 
       <div
         className={cn(
-          "fixed top-0 bottom-0 bg-secondary/90 w-full z-30 transition-all duration-500",
+          "fixed h-screen inset-0 bg-primary w-full z-[30] transition-all duration-500",
           isOpen ? "left-0" : "-left-full"
         )}
       >
-        <ul className="flex flex-col h-full w-full items-center justify-center gap-5 relative">
+        <ul className="flex flex-col h-screen w-full items-center justify-center gap-5 relative">
           {props.link}
         </ul>
       </div>

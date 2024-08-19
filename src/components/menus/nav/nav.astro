@@ -4,22 +4,17 @@ import NavLinks from "./navLinks.astro";
 import { ModeToggle } from "@/components/toggles/ModeToggle";
 
 ---
-<!-- <div class="bg-transparent fixed inset-x-0 z-50"> -->
+<div class="bg-primary/35 text-white backdrop-blur-md fixed inset-x-0 z-50">
 <div class="">
     <nav class="flex flex-wrap items-center justify-between px-4 py-3 max-w-6xl mx-auto">
-        <a href="/" class="cursor-pointer p-4 ml-2">Amandine Nails</a>
+        <a href="/" class="cursor-pointer p-4 ml-2 text-lg">Amandine Nails</a>
         <div class="flex items-center">
           <ul class="hidden md:flex items-center justify-end flex-grow mr-1.5">
           <NavLinks 
           aClasses="mx-3"
           />
           </ul>
-          <div class="mr-3 w-[1.2rem]">
-            <ModeToggle 
-            client:only="react"
-            variant="bg-transparent hover:bg-transparent"
-            />
-          </div>
+         
           <div class="block md:hidden">
             <NavToggle  
             client:only="react"
@@ -37,5 +32,6 @@ import { ModeToggle } from "@/components/toggles/ModeToggle";
           
         </div>
       </nav>
+</div>
 </div>
 

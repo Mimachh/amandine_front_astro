@@ -1,11 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}",
-  "./src/**/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}",
-  "./src/**/**/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"
-],
-  theme: { 
+  content: [
+    "./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}",
+    "./src/**/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}",
+    "./src/**/**/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}",
+  ],
+  theme: {
     content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
     container: {
       center: true,
@@ -66,26 +67,31 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        "logo-cloud": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(calc(-100% - 4rem))" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        'logo-cloud': 'logo-cloud 30s linear infinite',
       },
       backgroundImage: {
-        'pinkyImg': "var(--pinky)",
-      }
+        pinkyImg: "var(--pinky)",
+      },
     },
     fontFamily: {
-      'mclaren': ['McLaren', "sans-serif"],
-      'montserrat': ['Montserrat', "serif"],
-      'gabriela': ['Gabriela', "serif"],
-      'sniglet': ['Sniglet', "serif"],
-      'federicka': ['Fredericka the Great', "serif"]
-    }
+      mclaren: ["McLaren", "sans-serif"],
+      montserrat: ["Montserrat", "serif"],
+      gabriela: ["Gabriela", "serif"],
+      sniglet: ["Sniglet", "serif"],
+      federicka: ["Fredericka the Great", "serif"],
+    },
   },
   plugins: [
     require("tailwindcss-animate"),
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/aspect-ratio'),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/aspect-ratio"),
   ],
-}
+};

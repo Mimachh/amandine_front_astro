@@ -1,9 +1,10 @@
 ---
 import '@/styles/globals.css'
 import NavAstro from "@/components/menus/nav/nav.astro"
+import Footer from "@/components/global/footer.astro"
 ---
 
-<script is:inline>
+<!-- <script is:inline>
 	const getThemePreference = () => {
 		if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
 			return localStorage.getItem('theme');
@@ -20,7 +21,7 @@ import NavAstro from "@/components/menus/nav/nav.astro"
 		});
 		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 	}
-</script>
+</script> -->
 
 <html lang="fr" class="min-h-screen w-full overflow-X-hidden">
 	<head>
@@ -28,16 +29,17 @@ import NavAstro from "@/components/menus/nav/nav.astro"
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Amandine Nails</title>
 	</head>
 	<body>
-		<div class="bg-black pt-2 px-1">
-			<div class="rounded-2xl md:rounded-t-[45px] bg-pinkyImg min-h-screen">
+		<!-- <div class="bg-black pt-2 px-1"> -->
+			<div class="rounded-2xl md:rounded-t-[45px] bg-gray-100 min-h-screen">
 				<NavAstro />
 				<slot />
+				<Footer />
 			</div>
 
-		</div>
+		<!-- </div> -->
 
 	</body>
 </html>
