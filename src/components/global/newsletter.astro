@@ -1,0 +1,22 @@
+---
+import NewsletterForm from "../forms/newsletter-form";
+---
+
+<section class="bg-primary/80">
+    <div class="max-w-5xl mx-auto">
+        <div>
+            <h3
+                class="font-mclaren pt-10 text-3xl font-bold tracking-tight text-background sm:text-4xl text-center"
+            >
+                Restez informé
+            </h3>
+            <p class="text-center pt-3 text-lg">
+                Soyez prévenu des dernières nouvelles et promotions.
+            </p>
+        </div>
+
+        <div>
+            <NewsletterForm client:only/>
+        </div>
+    </div>
+</section>

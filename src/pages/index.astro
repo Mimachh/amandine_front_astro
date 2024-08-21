@@ -10,6 +10,7 @@ import Meta from "@/components/Meta.astro";
 import Testimonials from "@/components/sections/main/testimonials.astro";
 // let res = await fetch(`https://amandine-server.kmllr.fr/wp-json/wp/v2/pages?slug=accueil`)
 import ScrollLogo from "@/components/sections/main/scroll-logo"
+import Newsletter from "@/components/global/newsletter.astro";
 
 const dataPage = (await getMainPage()) as PageData;
 const hero = dataPage.page.mainPage;
@@ -60,5 +61,5 @@ const garantie = dataPage.page.garantiePrestation
 	<Services client:only/>
 	<ScrollLogo />
 	<Testimonials />
-	
+	<Newsletter />
 </AppLayout>
