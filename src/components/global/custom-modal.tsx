@@ -30,10 +30,10 @@ const CustomModal = ({
 
     const isOpen = useCustomModal.use.isOpen();
     const setClose = useCustomModal.use.onClose();
-
   return (
     <Dialog open={isOpen || defaultOpen} onOpenChange={setClose}>
-      <DialogContent className={cn("overflow-scroll sm:w-full sm:max-w-lg md:max-w-xl md:h-fit h-screen bg-card", modalContainer)}>
+      <DialogContent
+      className={cn("overflow-scroll sm:w-full sm:max-w-lg md:max-w-xl md:h-fit h-screen bg-card", modalContainer)}>
         <DialogHeader className="text-left">
           <DialogTitle className="text-2xl font-bold">{title}</DialogTitle>
           <DialogDescription>{subheading}</DialogDescription>

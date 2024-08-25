@@ -29,20 +29,23 @@ import Informations from './Informations.tsx';
 import { getPriceWithOptions } from '@/helper/formattedPrice.ts';
 import { transformStateToExtras } from '@/helper/formattedExtras.ts';
 import { useSingleBookingModal } from '@/hooks/useSingleBookingModal.ts';
+import { useService } from '@/hooks/useService.ts';
 
 interface BookingModalProps {
   open: boolean | false;
   setOpen: () => void;
   setClose: () => void;
-  serviceId: string | null;
 }
 
 export default function BookingForm(props: BookingModalProps) {
 
-  const { open, setOpen, setClose, serviceId } = props;
+  const { open, setOpen, setClose } = props;
+  const serviceId = useService.use.serviceId();
   const setCloseModal = useSingleBookingModal.use.onClose()
   const [loading, setLoading] = useState(true)
 
+  const setLoadingStore = useService.use.setLoading();
+  const setServiceStore = useService.use.setService();
   const [service, setService] = useState<ServiceProps>({});
 
   // POUR CONSERVER LE CRENEAUX SELECTIONNE
@@ -78,6 +81,7 @@ export default function BookingForm(props: BookingModalProps) {
       const today = startOfToday();
       const formattedToday = format(today, "yyyy-MM-dd");
       setLoading(true);
+      setLoadingStore(true);
       const urlSuffixService = `services/${serviceId}`;
       const urlSuffixSlots = `slots&serviceId=${serviceId}&startDateTime=${formattedToday}&duration=3600&providerIds=1&persons=1&excludeAppointmentId=null&timeAfter&timeBefore`;
       const urlSuffixEmployee = `users/providers/${employeeID}`
@@ -96,12 +100,16 @@ export default function BookingForm(props: BookingModalProps) {
           headers: headers,
           signal: signal,
         });
+
+        setServiceStore(responseService.data.data.service);
+
         setService(responseService.data.data.service);
         setExtras(responseService.data.data.service.extras)
         setOccupiedSlots(responseSlots.data.data.occupied);
         setEmployee(responseEmployee.data.data.user);
         setSlots(responseSlots.data.data.slots);
         setLoading(false);
+        setLoadingStore(false);
       } catch (error) {
         if (error.name === 'AbortError') {
           console.log('Request aborted');

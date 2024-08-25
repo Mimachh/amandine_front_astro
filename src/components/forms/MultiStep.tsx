@@ -51,9 +51,9 @@ const MultiStep = () => {
         <>{localisation === "domicile" ? (
             <BeContactedForm />
         ) : (
-            <ChoosePrestationForm />
+            <ChoosePrestationForm redirectAfterLocalisation={redirectAfterLocalisation} />
         )}</>,
-        <BookingForm open={isOpen} serviceId={"1"} setOpen={setOpen} setClose={setCloseModal} />,
+        <BookingForm open={isOpen} setOpen={setOpen} setClose={setCloseModal} />,
         <>4</>
     ]);
 

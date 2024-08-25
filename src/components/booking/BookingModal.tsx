@@ -2,21 +2,30 @@ import { Fragment, useRef, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { useSingleBookingModal } from '@/hooks/useSingleBookingModal'
 import BookingForm from './BookingForm'
+import { useService } from '@/hooks/useService'
 
 
-type Props = {
-    serviceId: any,
-}
 
-const BookingModal = (props: Props) => {
-    const { serviceId } = props
+
+const BookingModal = () => {
+ 
     const cancelButtonRef = useRef(null)
     const isOpen = useSingleBookingModal.use.isOpen()
     const setCloseModal = useSingleBookingModal.use.onClose()
     const setOpenModal = useSingleBookingModal.use.onOpen()
+    const loading = useService.use.loading()
+    const setLoading = useService.use.setLoading()
+    const setService = useService.use.setService()
+    const service = useService.use.service()
+
+    const onClose = () => {
+        setLoading(true)
+        setCloseModal()
+        setService(null)
+    }
     return (
         <Transition.Root show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-[500]" initialFocus={cancelButtonRef} onClose={setCloseModal}>
+            <Dialog as="div" className="relative z-[500]" initialFocus={cancelButtonRef} onClose={onClose}>
                 <Transition.Child
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -28,7 +37,7 @@ const BookingModal = (props: Props) => {
                 >
                     <div
                         className={`fixed inset-0 bg-opacity-75 transition-opacity]`}
-                        // style={{ background: loading ? "grey" : service.color, opacity: "25%" }}
+                        style={{ background: loading ? "grey" : service.color, opacity: "25%" }}
                     />
                 </Transition.Child>
 
@@ -46,7 +55,7 @@ const BookingModal = (props: Props) => {
                             <Dialog.Panel
                                 className="relative transform overflow-scroll outline-primary md:rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8  sm:w-full sm:max-w-lg md:max-w-xl md:h-fit h-screen bg-card">
                                
-                                <BookingForm open={isOpen} serviceId={serviceId} setOpen={setOpenModal} setClose={setCloseModal} />
+                                <BookingForm open={isOpen} setOpen={setOpenModal} setClose={setCloseModal} />
                             </Dialog.Panel>
                         </Transition.Child>
                     </div>

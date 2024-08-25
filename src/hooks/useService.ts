@@ -37,12 +37,16 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
 
 export const useService = createSelectors(create<useServiceStore>(
     (set) => ({
-        isOpen: false,
-        onOpen: () => {
-            set({ isOpen: true });
+        serviceId: "",
+        setServiceId: (id: string) => set((state) => ({ ...state, serviceId: id })),
+
+        service: {} as ServiceProps,
+
+        setService: (service: ServiceProps) => {
+            set((state) => ({ ...state, service: service }));
         },
-        onClose: () => {
-            set({ isOpen: false });
-        }
+
+        loading: true,
+        setLoading: (loading: boolean) => set({ loading }),
     })
 ));

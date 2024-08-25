@@ -3,14 +3,19 @@ import type { ServiceProps } from '../types/ServiceTypes';
 import { getServices } from '@/actions/get-services';
 import { durationFormatter } from '@/helper/formattedDates';
 import Loader from '../Loader';
+import { useService } from '@/hooks/useService';
 
-const ChoosePrestationForm = () => {
+type Props = {
+    redirectAfterLocalisation: () => void;
+}
+const ChoosePrestationForm = (props: Props) => {
+    const { redirectAfterLocalisation } = props
     const [services, setServices] = useState<ServiceProps[]>([]);
 
-    const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(true);
-    const [serviceId, setServiceId] = useState("");
-
+    
+    const serviceId = useService.use.serviceId()
+    const setServiceId = useService.use.setServiceId()
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,7 +37,8 @@ const ChoosePrestationForm = () => {
                 .map((service) => (
                   <li
                     onClick={() => {
-                        console.log('service.id', service.id)
+                        setServiceId(service.id)
+                        redirectAfterLocalisation()
                     }}
                     key={service.id}
                     className={`transition-all duration-150 cursor-pointer hover:scale-105 h-[180px] rounded-2xl shadow  bg-secondary dark:bg-secondary-foreground px-2 py-5 border-t-[3px] flex flex-col flex-1 bg-[${service.color}]`}

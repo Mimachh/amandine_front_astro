@@ -1,58 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { CalendarDays, Check, Eye, Search } from "lucide-react";
-import axios from "axios";
-import Booking from "@/components/booking/BookingForm";
+import { useState, useEffect } from "react";
+import { CalendarDays, Check} from "lucide-react";
+
 import Loader from "@/components/Loader";
-import { headers } from "@/helper/AmeliaCall";
+
 import type { ServiceProps } from "@/components/types/ServiceTypes";
 import { durationFormatter } from "@/helper/formattedDates";
 import { bonusSupplementaires } from "@/lib/utils";
-import CustomModal from "@/components/global/custom-modal";
 
-import { Button } from "@/components/ui/button";
 import { useCustomModal } from "@/hooks/useCustomModal";
 import { getServices } from "@/actions/get-services";
 import { useSingleBookingModal } from "@/hooks/useSingleBookingModal";
 import BookingModal from "@/components/booking/BookingModal";
+import { useService } from "@/hooks/useService";
 
 export default function Services() {
-  const isOpenModal = useCustomModal.use.isOpen();
-  const setClose = useCustomModal.use.onClose();
-  const setOpen = useCustomModal.use.onOpen();
-
   const [services, setServices] = useState<ServiceProps[]>([]);
-
- 
   const [loading, setLoading] = useState(true);
-  const [serviceId, setServiceId] = useState("");
-
+  const setServiceId = useService.use.setServiceId();
   const singleModalOpen = useSingleBookingModal.use.onOpen();
   const handleModal = (id: string) => {
     singleModalOpen()
     setServiceId(id);
   };
-
-  // Appelez la fonction fetchData au chargement de la page
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setServices(await getServices())
       setLoading(false);
     };
-    // getServices()
-
     fetchData();
-    
   }, []);
-
-  // console.log({services})
-
-
 
   return (
     <>
-
-      <BookingModal serviceId={serviceId} />
+      <BookingModal />
       <div className="py-24 sm:py-24 bg-white" id="services">
         <div className="mx-auto max-w-7xl px-6 text-center lg:px-8 ">
           <div className="mx-auto max-w-2xl prose lg:prose-xl">
@@ -184,7 +165,6 @@ export default function Services() {
           )}
         </div>
       </div>
- 
     </>
   );
 }
