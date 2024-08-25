@@ -68,6 +68,17 @@
 
  
 @layer base {
+  ::-webkit-scrollbar {
+    display: none;
+
+  }
+
+  body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+@layer base {
   * {
     @apply border-border font-sniglet;
   }

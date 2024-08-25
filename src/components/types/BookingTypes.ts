@@ -1,5 +1,5 @@
 import type {CustomerProps} from "./CustomerTypes"
-import type {ExtrasProps} from "./ExtrasProps"
+import type {ExtrasProps} from "./ExtrasTypes"
 
 export interface Booking {
     customer: CustomerProps;

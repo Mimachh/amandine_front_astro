@@ -11,7 +11,7 @@ const mainPage = hero as MainPage;
 ---
 
 <div
-  class="relative isolate overflow-hidden bg-gradient-to-br from-gray-200 to-gray-100 h-screen"
+  class="relative isolate overflow-hidden bg-gradient-to-br from-gray-200 to-gray-100 h-screen max-h-[900px]"
   itemscope
   itemtype="http://schema.org/Organization"
 >
@@ -26,7 +26,7 @@ const mainPage = hero as MainPage;
       <rect width="100%" height="100%" stroke-width="0" fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)" />
     </svg> -->
   <div
-    class="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40 relative z-[10]"
+    class="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40 relative z-[10] "
   >
 
     <div class="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
@@ -74,7 +74,7 @@ const mainPage = hero as MainPage;
         Prothésie ongulaire et Nail Art à domicile en Sarthe.
       </p>
       <div class="mt-12 flex items-center gap-x-6">
-        <a
+        <!-- <a
           id="reservation_button"
           href="#services"
           class="font-montserrat rounded-sm bg-primary/80 px-12 xl:px-14 h-12 xl:h-14 transition-colors ease
@@ -83,7 +83,7 @@ const mainPage = hero as MainPage;
         >
           <CalendarDays className="w-5 xl:w-7 h-5 xl:h-7" />
            Je réserve une prestation
-        </a>
+        </a> -->
 
       <BookingButton client:only />
         <!-- <a href="#" class="text-sm font-semibold leading-6 text-primary">Learn more <span aria-hidden="true">→</span></a> -->
@@ -118,10 +118,4 @@ const mainPage = hero as MainPage;
       <img src="/academee.svg" alt="Logo d'academee" class="w-[150px] md:w-[150px] h-auto" itemprop="educationalCredentialAwarded">
     </div>
 </div>
-<script>
-import { observeReservationButton } from "@/lib/observer";
-  document.addEventListener('DOMContentLoaded', () => {
-    observeReservationButton();
-  });
-</script>
 </div>

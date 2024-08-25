@@ -2,20 +2,20 @@
 import NewsletterForm from "../forms/newsletter-form";
 ---
 
-<section class="bg-primary/80">
-    <div class="max-w-5xl mx-auto">
+<section class="bg-white pt-4">
+    <div class="max-w-7xl bg-primary/90 mx-auto px-4 md:px-0">
         <div>
             <h3
                 class="font-mclaren pt-10 text-3xl font-bold tracking-tight text-background sm:text-4xl text-center"
             >
                 Restez informé
             </h3>
-            <p class="text-center pt-3 text-lg">
+            <p class="text-center pt-3 text-md text-neutral-100">
                 Soyez prévenu des dernières nouvelles et promotions.
             </p>
         </div>
 
-        <div>
+        <div class="mt-4">
             <NewsletterForm client:only/>
         </div>
     </div>
