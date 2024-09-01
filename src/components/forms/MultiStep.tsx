@@ -68,7 +68,6 @@ const MultiStep = () => {
         <>
             {/* <StepIndicator currentStep={currentStepIndex} steps={steps} /> */}
             <div className="space-y-5 ">
-                {currentStepIndex}
                 {step}
                 {!isLastStep && (
                     <div className="grid grid-cols-5 gap-2">
