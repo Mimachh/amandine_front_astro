@@ -1,7 +1,7 @@
 
 import { useMultistepForm } from "@/hooks/useMultiStepForm";
 
-import React, { useEffect, useRef, useState, type ReactElement } from "react";
+import React, { useState, type ReactElement } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
@@ -22,12 +22,16 @@ import BeContactedForm from "./be-contacted-form";
 import ChoosePrestationForm from "./choose-prestation-form";
 import BookingForm from "../booking/BookingForm";
 import { useCustomModal } from "@/hooks/useCustomModal";
+import { useService } from "@/hooks/useService";
+
 
 const MultiStep = () => {
 
     const setOpen = useCustomModal.use.onOpen();
     const isOpen = useCustomModal.use.isOpen();
     const setCloseModal = useCustomModal.use.onClose();
+    const isPrestaAlreadyChoose = useCustomModal.use.isPrestaAlreadyChoose();
+    const serviceId = useService.use.serviceId();
 
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -47,42 +51,33 @@ const MultiStep = () => {
         goTo,
         next,
     } = useMultistepForm([
-        <SelectLocalisation redirectAfterLocalisation={redirectAfterLocalisation} localisation={localisation} setLocalisation={setLocalisation}/>,
+        <SelectLocalisation redirectAfterLocalisation={redirectAfterLocalisation} localisation={localisation} setLocalisation={setLocalisation} />,
         <>{localisation === "domicile" ? (
             <BeContactedForm />
         ) : (
-            <ChoosePrestationForm redirectAfterLocalisation={redirectAfterLocalisation} />
+            <>
+                {!serviceId ? (<ChoosePrestationForm redirectAfterLocalisation={redirectAfterLocalisation} />) : (<BookingForm open={isOpen} setOpen={setOpen} setClose={setCloseModal} isCloseButtonActive={false} />)}
+            </>
         )}</>,
-        <BookingForm open={isOpen} setOpen={setOpen} setClose={setCloseModal} />,
+        <BookingForm open={isOpen} setOpen={setOpen} setClose={setCloseModal} isCloseButtonActive={false} />,
         <>4</>
     ]);
 
-    function onSubmit(e?: any) {
-        if (e) e.preventDefault();
-
-        if (currentStepIndex + 1 === 1) {
-            // setLoading(true);
-            return next();
-        }
-
-        if (currentStepIndex + 1 === 2) {
-            return next();
-        }
-    }
 
     return (
-         <>
-             <StepIndicator currentStep={currentStepIndex} steps={steps} />
-            <div className="space-y-5">
+        <>
+            {/* <StepIndicator currentStep={currentStepIndex} steps={steps} /> */}
+            <div className="space-y-5 ">
+                {currentStepIndex}
                 {step}
                 {!isLastStep && (
                     <div className="grid grid-cols-5 gap-2">
-              
-                        {!isFirstStep ? (
+
+                        {!isFirstStep && ((!isPrestaAlreadyChoose && currentStepIndex !== 2) || (isPrestaAlreadyChoose && currentStepIndex !== 1)) ? (
                             <Button
                                 type="button"
                                 onClick={() => {
-                                    if(currentStepIndex == 2) {
+                                    if (currentStepIndex == 2) {
                                         goTo(0)
                                     } else {
                                         back()
@@ -123,7 +118,7 @@ const MultiStep = () => {
                     </div>
                 )}
             </div>
-         </>
+        </>
     );
 };
 
@@ -135,36 +130,47 @@ type SelectLocalisationProps = {
     localisation: string;
     setLocalisation: (value: string) => void;
 }
-const SelectLocalisation = (props: SelectLocalisationProps) => {
-    const {redirectAfterLocalisation, localisation, setLocalisation} = props;
+export const SelectLocalisation = (props: SelectLocalisationProps) => {
+    const { redirectAfterLocalisation, localisation, setLocalisation } = props;
     // const [localisation, setLocalisation] = useState<string>("");
-
-
+    const setDisplayTitle = useCustomModal.use.setDisplayTitle();
+    const setSubtitleModal = useCustomModal.use.setSubtitle();
+    const serviceId = useService.use.serviceId();
     return (
-        <div className="max-w-[300px] mx-auto">
+        <div className="max-w-[300px] mx-auto pt-8 mb-8 z-[5000] relative">
             {/* {localisation && localisation === "domicile" && (
                 <div>Contactez nous</div>
             )} */}
-            
+
             {/* {!localisation && ( */}
-                <Select
+            <Select
                 // defaultValue={"salon"}
                 onValueChange={(e) => {
-                   redirectAfterLocalisation()
-                   setLocalisation(e)
+                    redirectAfterLocalisation()
+
+                    if (serviceId) {
+                        setDisplayTitle(false)
+                    }
+
+                    setLocalisation(e)
+
+                    if (e === "domicile") {
+                        setSubtitleModal("Quelle prestation souhaitez-vous réserver ?")
+                    }
+
                 }}
-               >
-                   <SelectTrigger className="w-full">
-                       <SelectValue placeholder="Choisissez le lieu de prestation" />
-                   </SelectTrigger>
-                   <SelectContent>
-                       <SelectGroup>
-                           {/* <SelectLabel>Fruits</SelectLabel> */}
-                           <SelectItem value="salon">En salon</SelectItem>
-                           <SelectItem value="domicile">A domicile</SelectItem>
-                       </SelectGroup>
-                   </SelectContent>
-               </Select>
+            >
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Choisissez le lieu de prestation" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        {/* <SelectLabel>Fruits</SelectLabel> */}
+                        <SelectItem value="salon">En salon</SelectItem>
+                        <SelectItem value="domicile">A domicile</SelectItem>
+                    </SelectGroup>
+                </SelectContent>
+            </Select>
             {/* )} */}
         </div>
     )
@@ -174,42 +180,41 @@ const SelectLocalisation = (props: SelectLocalisationProps) => {
 const StepIndicator: React.FC<{
     currentStep: number
     steps: ReactElement[]
-  }> = ({ currentStep, steps }) => (
+}> = ({ currentStep, steps }) => (
     <div className="relative w-full">
-      <div className="flex items-center justify-between">
-        {steps.map((step, index) => (
-          <React.Fragment key={index}>
-            <div className="flex flex-col items-center">
-              <motion.div
-                className={`z-10 flex h-8 w-8 items-center justify-center rounded-full ${
-                  index <= currentStep
-                    ? 'bg-red-500 text-white'
-                    : 'bg-gray-200 text-white dark:bg-gray-800 dark:text-gray-600'
-                }`}
-                animate={{ scale: 1.02 }}
-              >
-                {index < currentStep ? (
-                  <CheckCircle size={17} />
-                ) : (
-                  <Circle size={17} fill="currentColor" />
-                )}
-              </motion.div>
-            </div>
-            {index < steps.length - 1 && (
-              <div className="relative flex-grow">
-                <div className="absolute -top-1 h-1.5 w-full bg-gray-100 dark:bg-gray-800" />
-                <motion.div
-                  className="absolute -top-1 h-1.5 w-full bg-red-500"
-                  initial={{ width: '0%' }}
-                  animate={{
-                    width: index < currentStep ? '100%' : '0%',
-                  }}
-                  transition={{ duration: 0.5, ease: 'easeInOut' }}
-                />
-              </div>
-            )}
-          </React.Fragment>
-        ))}
-      </div>
+        <div className="flex items-center justify-between">
+            {steps.map((step, index) => (
+                <React.Fragment key={index}>
+                    <div className="flex flex-col items-center">
+                        <motion.div
+                            className={`z-10 flex h-8 w-8 items-center justify-center rounded-full ${index <= currentStep
+                                ? 'bg-red-500 text-white'
+                                : 'bg-gray-200 text-white dark:bg-gray-800 dark:text-gray-600'
+                                }`}
+                            animate={{ scale: 1.02 }}
+                        >
+                            {index < currentStep ? (
+                                <CheckCircle size={17} />
+                            ) : (
+                                <Circle size={17} fill="currentColor" />
+                            )}
+                        </motion.div>
+                    </div>
+                    {index < steps.length - 1 && (
+                        <div className="relative flex-grow">
+                            <div className="absolute -top-1 h-1.5 w-full bg-gray-100 dark:bg-gray-800" />
+                            <motion.div
+                                className="absolute -top-1 h-1.5 w-full bg-red-500"
+                                initial={{ width: '0%' }}
+                                animate={{
+                                    width: index < currentStep ? '100%' : '0%',
+                                }}
+                                transition={{ duration: 0.5, ease: 'easeInOut' }}
+                            />
+                        </div>
+                    )}
+                </React.Fragment>
+            ))}
+        </div>
     </div>
-  )
+)

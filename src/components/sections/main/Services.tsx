@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { CalendarDays, Check} from "lucide-react";
+import { CalendarDays, Check } from "lucide-react";
 
 import Loader from "@/components/Loader";
 
@@ -9,18 +9,27 @@ import { bonusSupplementaires } from "@/lib/utils";
 
 import { useCustomModal } from "@/hooks/useCustomModal";
 import { getServices } from "@/actions/get-services";
-import { useSingleBookingModal } from "@/hooks/useSingleBookingModal";
-import BookingModal from "@/components/booking/BookingModal";
+
 import { useService } from "@/hooks/useService";
+import CustomModal from "@/components/global/custom-modal";
+import MultiStep from "@/components/forms/MultiStep";
 
 export default function Services() {
   const [services, setServices] = useState<ServiceProps[]>([]);
   const [loading, setLoading] = useState(true);
   const setServiceId = useService.use.setServiceId();
-  const singleModalOpen = useSingleBookingModal.use.onOpen();
+
+
+  const setOpen = useCustomModal.use.onOpen();
+  const setIsPrestaChoose = useCustomModal.use.setIsPrestaAlreadyChoose();
+  const setDisplayTitle = useCustomModal.use.setDisplayTitle();
   const handleModal = (id: string) => {
-    singleModalOpen()
+
     setServiceId(id);
+    setDisplayTitle(true)
+    setIsPrestaChoose(true);
+    setOpen()
+    
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -33,7 +42,14 @@ export default function Services() {
 
   return (
     <>
-      <BookingModal />
+      <CustomModal
+        title="Réservez votre prestation"
+        subheading="Où souhaitez-vous réaliser votre prestation ?"
+        modalContainer="max-w-3xl"
+      >
+        <MultiStep  />
+      </CustomModal>
+
       <div className="py-24 sm:py-24 bg-white" id="services">
         <div className="mx-auto max-w-7xl px-6 text-center lg:px-8 ">
           <div className="mx-auto max-w-2xl prose lg:prose-xl">
@@ -77,7 +93,7 @@ export default function Services() {
                         className="font-federicka mt-6 text-lg md:text-xl font-semibold leading-7 tracking-tight text-accent-foreground md:flex md:justify-start"
                         style={{ color: `${service.color}` }}
                       >
-                        {service.name} 
+                        {service.name}
                       </h3>
                       <p className="my-4 text-md leading-6 text-muted-foreground dark:text-muted md:flex md:justify-start">
                         {durationFormatter(service.duration)}min - à partir de{" "}
@@ -85,19 +101,19 @@ export default function Services() {
                       </p>
 
                       <div className="">
-                      {bonusSupplementaires &&
-                        bonusSupplementaires.map((bonus) => (
-                          <p
-                            key={bonus.id}
-                            className="text-sm leading-8 text-muted-foreground dark:text-muted  gap-1 items-center flex justify-center md:justify-start"
-                          >
-                            <Check
-                              className="w-5 h-5"
-                              style={{ color: `${service.color}` }}
-                            />
-                            {bonus.title}
-                          </p>
-                        ))}
+                        {bonusSupplementaires &&
+                          bonusSupplementaires.map((bonus) => (
+                            <p
+                              key={bonus.id}
+                              className="text-sm leading-8 text-muted-foreground dark:text-muted  gap-1 items-center flex justify-center md:justify-start"
+                            >
+                              <Check
+                                className="w-5 h-5"
+                                style={{ color: `${service.color}` }}
+                              />
+                              {bonus.title}
+                            </p>
+                          ))}
                       </div>
                     </div>
 

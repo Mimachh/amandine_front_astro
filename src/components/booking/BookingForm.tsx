@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Dialog } from '@headlessui/react'
 import axios from 'axios';
 import { headers } from '@/helper/AmeliaCall';
 import Loader from '../Loader.jsx';
@@ -28,20 +27,21 @@ import {
 import Informations from './Informations.tsx';
 import { getPriceWithOptions } from '@/helper/formattedPrice.ts';
 import { transformStateToExtras } from '@/helper/formattedExtras.ts';
-import { useSingleBookingModal } from '@/hooks/useSingleBookingModal.ts';
 import { useService } from '@/hooks/useService.ts';
 
 interface BookingModalProps {
   open: boolean | false;
   setOpen: () => void;
   setClose: () => void;
+  isCloseButtonActive?: boolean;
 }
 
 export default function BookingForm(props: BookingModalProps) {
 
   const { open, setOpen, setClose } = props;
   const serviceId = useService.use.serviceId();
-  const setCloseModal = useSingleBookingModal.use.onClose()
+
+
   const [loading, setLoading] = useState(true)
 
   const setLoadingStore = useService.use.setLoading();
@@ -275,24 +275,25 @@ export default function BookingForm(props: BookingModalProps) {
   }
 
   return (
-<>
-{loading ? (
+    <>
+      {loading ? (
         <div className='min-h-[250px]'>
           <Loader />
         </div>
       ) : (
         <>
-          <div className='fixed top-0 right-0 p-1'>
-            <Button
-              onClick={() => {
-                setCloseModal()
-                setDaySelected(null)
-              }}
-              className='px-2 py-2'
-              variant='secondary'
-              size='xs'><X className='w-4 h-4' />
-            </Button>
-          </div>
+          {/* {isCloseButtonActive && (
+            <div className='fixed top-0 right-0 p-1'>
+              <Button
+                onClick={() => {
+                  setDaySelected(null)
+                }}
+                className='px-2 py-2'
+                variant='secondary'
+                size='xs'><X className='w-4 h-4' />
+              </Button>
+            </div>
+          )} */}
 
           <div>
             <div className="mt-1 text-start sm:mt-2">
@@ -415,7 +416,7 @@ export default function BookingForm(props: BookingModalProps) {
           </div>
         </>
       )}
-</>
+    </>
   )
 
 }

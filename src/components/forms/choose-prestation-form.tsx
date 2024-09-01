@@ -4,6 +4,7 @@ import { getServices } from '@/actions/get-services';
 import { durationFormatter } from '@/helper/formattedDates';
 import Loader from '../Loader';
 import { useService } from '@/hooks/useService';
+import { useCustomModal } from '@/hooks/useCustomModal';
 
 type Props = {
     redirectAfterLocalisation: () => void;
@@ -13,9 +14,11 @@ const ChoosePrestationForm = (props: Props) => {
     const [services, setServices] = useState<ServiceProps[]>([]);
 
     const [loading, setLoading] = useState(true);
-    
-    const serviceId = useService.use.serviceId()
+  
     const setServiceId = useService.use.setServiceId()
+    const setSubtitleModal = useCustomModal.use.setSubtitle();
+
+    const setDisplayTitle = useCustomModal.use.setDisplayTitle();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -39,6 +42,8 @@ const ChoosePrestationForm = (props: Props) => {
                     onClick={() => {
                         setServiceId(service.id)
                         redirectAfterLocalisation()
+                        setSubtitleModal("Choisissez vos différentes options")
+                        setDisplayTitle(false)
                     }}
                     key={service.id}
                     className={`transition-all duration-150 cursor-pointer hover:scale-105 h-[180px] rounded-2xl shadow  bg-secondary dark:bg-secondary-foreground px-2 py-5 border-t-[3px] flex flex-col flex-1 bg-[${service.color}]`}

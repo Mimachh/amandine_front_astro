@@ -5,7 +5,14 @@ interface useCustomModalStore {
     isOpen: boolean;
     onOpen: () => void;
     onClose: () => void;
-
+    title: string;
+    setTitle: (title: string) => void;
+    subtitle: string;
+    setSubtitle: (subtitle: string) => void;
+    displayTitle: boolean;
+    setDisplayTitle : (displayTitle: boolean) => void;
+    isPrestaAlreadyChoose: boolean;
+    setIsPrestaAlreadyChoose: (isPrestaAlreadyChoose: boolean) => void;
 }
 
 import type { StoreApi, UseBoundStore } from 'zustand'
@@ -35,6 +42,14 @@ export const useCustomModal = createSelectors(create<useCustomModalStore>(
         },
         onClose: () => {
             set({ isOpen: false });
-        }
+        },
+        title: "",
+        setTitle: (title: string) => set({ title }),
+        subtitle: "",
+        setSubtitle: (subtitle: string) => set({ subtitle }),
+        displayTitle: true,
+        setDisplayTitle: (displayTitle: boolean) => set({ displayTitle }),
+        isPrestaAlreadyChoose: false,
+        setIsPrestaAlreadyChoose: (isPrestaAlreadyChoose: boolean) => set({ isPrestaAlreadyChoose })
     })
 ));

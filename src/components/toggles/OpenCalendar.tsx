@@ -1,8 +1,8 @@
 import { CalendarDays } from 'lucide-react'
-import React, { useState } from 'react'
-import Booking from '../booking/BookingForm'
-import Loader from '../Loader';
-
+import { useService } from '@/hooks/useService';
+import CustomModal from '../global/custom-modal';
+import MultiStep from '../forms/MultiStep';
+import { useCustomModal } from '@/hooks/useCustomModal';
 
 interface OpenCalendarProps {
     serviceId: string;
@@ -12,21 +12,36 @@ interface OpenCalendarProps {
 export default function OpenCalendar(props: OpenCalendarProps) {
 
     const { color, serviceId } = props;
-    const [isOpen, setIsOpen] = useState(false);
-    const [loading, setLoading] = useState(true);
+
+    const setServiceId = useService.use.setServiceId();
+    const setOpen = useCustomModal.use.onOpen();
+    const isOpen = useCustomModal.use.isOpen();
+    const setIsPrestaChoose = useCustomModal.use.setIsPrestaAlreadyChoose();
+    const setDisplayTitle = useCustomModal.use.setDisplayTitle();
+
+
+    const handleModal = (id: string) => {
+        setServiceId(id);
+        setIsPrestaChoose(true)
+        setDisplayTitle(true)
+        setOpen()
+    };
 
 
     return (
         <>
-            <Booking
-                open={isOpen}
-                setOpen={setIsOpen}
-                serviceId={serviceId}
-            />
+            <CustomModal
+                title="Réservez votre prestation"
+                subheading="Où souhaitez-vous réaliser votre prestation ?"
+                modalContainer="max-w-3xl"
+            >
+                <MultiStep />
+            </CustomModal>
+         
 
             <button
                 onClick={() => {
-                    setIsOpen(true);
+                    handleModal(serviceId);
                 }}
                 disabled={isOpen}
                 style={{
